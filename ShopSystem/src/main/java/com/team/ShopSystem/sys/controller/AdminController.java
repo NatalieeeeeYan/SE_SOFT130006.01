@@ -4,6 +4,7 @@ import com.team.ShopSystem.common.vo.MsgEnum;
 import com.team.ShopSystem.common.vo.Result;
 import com.team.ShopSystem.sys.entity.Admin;
 import com.team.ShopSystem.sys.mapper.AdminMapper;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/admin")
+@Api(tags = {"管理员接口列表"})
 public class AdminController {
     @Autowired
     AdminMapper adminMapper;

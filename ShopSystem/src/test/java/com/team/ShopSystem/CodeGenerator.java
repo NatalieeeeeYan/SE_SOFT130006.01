@@ -12,11 +12,11 @@ public class CodeGenerator {
         String username = "root";
         String password = "123456";
         String author = "xby";
-        String outputDir = "/Users/xuboya/Desktop/软件工程lab/ShopSystem/src/main/java";
+        String outputDir = "/Users/xuboya/Desktop/git/lab3/ShopSystem/src/main/java";
         String basePackage = "com.team.ShopSystem";
         String moduleName = "sys";
-        String mapperLocation = "/Users/xuboya/Desktop/软件工程lab/ShopSystem/src/main/resources/" + moduleName;
-        String tableName = "ss_admin";
+        String mapperLocation = "/Users/xuboya/Desktop/git/lab3/ShopSystem/src/main/resources/" + moduleName;
+        String tableName = "ss_transfer_records";
         String tablePrefix = "ss_";
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {

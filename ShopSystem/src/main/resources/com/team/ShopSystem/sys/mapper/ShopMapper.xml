@@ -29,4 +29,9 @@
         SELECT * FROM ss_shop
         WHERE id = #{id}
     </select>
+    <select id="getShopNameByShopId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT shop_name
+        FROM ss_shop
+        WHERE id = #{id}
+    </select>
 </mapper>

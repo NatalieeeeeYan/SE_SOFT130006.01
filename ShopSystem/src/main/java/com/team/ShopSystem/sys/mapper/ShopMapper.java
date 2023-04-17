@@ -28,4 +28,5 @@ public interface ShopMapper extends BaseMapper<Shop> {
     Integer getId();
 
     Shop getById(@Param("id") Integer id);
+    String getShopNameByShopId(@Param("id") Integer id);
 }

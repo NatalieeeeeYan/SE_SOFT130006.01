@@ -39,7 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional
     public Result<?> addUser(User user) {
         Result<?> result = detectUser(user);
-        if(result != Result.success()){
+        if(result.getCode() != 20000){
             return result;
         }
         this.baseMapper.insert(user);
@@ -51,7 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result<?> updateUser(User user) {
         Result<?> result = detectUser(user);
-        if(result != Result.success()){
+        if(result.getCode() != 20000){
             return result;
         }
         return Result.success("修改信息成功");

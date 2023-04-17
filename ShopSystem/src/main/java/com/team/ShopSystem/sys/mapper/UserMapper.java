@@ -2,6 +2,7 @@ package com.team.ShopSystem.sys.mapper;
 
 import com.team.ShopSystem.sys.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 
 
@@ -23,4 +24,5 @@ public interface UserMapper extends BaseMapper<User> {
     Integer queryByEmail(@Param("email") String email);
     Integer getUserIdByUsername(@Param("username") String username);
     User getById(@Param("id") Integer id);
+    String getUsernameByUserId(@Param("id") Integer id);
 }

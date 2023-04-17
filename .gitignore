@@ -8,3 +8,4 @@ ShopSystem/.idea/
 ShopSystem/.mvn/
 ShopSystem/target/
 ShopSystem/uploadImage/
+*.zip
