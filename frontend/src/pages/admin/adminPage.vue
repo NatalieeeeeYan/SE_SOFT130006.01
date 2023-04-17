@@ -1,0 +1,1000 @@
+<template>
+  <q-layout view="hHh lpR fFf">
+
+    <q-header elevated class="bg-primary text-white">
+      <q-toolbar>
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+
+        <q-toolbar-title class="text-italic">
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+          </q-avatar>
+          首页
+        </q-toolbar-title>
+        <q-btn flat round dense icon="update" class="q-mr-xs" @click="updata"></q-btn>
+
+        <q-btn-dropdown class="glossy" color="dark" label="账户设置">
+          <div class="row no-wrap q-pa-md">
+            <div class="column items-center">
+              <q-avatar size="72px">
+                <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+              </q-avatar>
+
+              <div class="text-subtitle1 q-mt-md q-mb-xs">{{ username }}</div>
+
+              <q-btn to="/login" color="primary" label="Logout" push size="sm" v-close-popup />
+            </div>
+          </div>
+        </q-btn-dropdown>
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+      <q-list>
+        <q-item-label header>Essential Links</q-item-label>
+        <q-item clickable target="_blank" rel="noopener" @click="toggle">
+          <q-item-section avatar>
+            <q-icon name="face" />
+          </q-item-section>
+          <q-item-section> Dark theme </q-item-section>
+        </q-item>
+        <router-link to="/admin" class="router-link-class">
+          <q-item clickable target="_blank" rel="noopener">
+            <q-item-section avatar>
+              <q-icon name="perm_identity" />
+            </q-item-section>
+            <q-item-section> Admin </q-item-section>
+          </q-item>
+        </router-link>
+
+        <q-item clickable target="_blank" rel="noopener" @click="showTransitionMode">
+          <q-item-section avatar>
+            <q-icon name="open_in_new" />
+          </q-item-section>
+          <q-item-section> 中间账户 </q-item-section>
+        </q-item>
+
+        <q-item clickable target="_blank" rel="noopener" @click="showProfitMode">
+          <q-item-section avatar>
+            <q-icon name="open_in_new" />
+          </q-item-section>
+          <q-item-section> 利润账户 </q-item-section>
+        </q-item>
+
+        <q-item>
+          <q-item-section>
+            <img src="../../assets/log.png" alt="" />
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
+
+    <q-page-container>
+      <div class="q-pa-md" v-if="showAllApplycation">
+
+        <div class="applicationTypeSelect" style="width: 100%">
+          <q-btn flat rounded color="secondary" label="待查看" @click="selectRemainChecked"
+            style="margin-left: 20%; font-size: 105%; font-weight: normal" />
+          <q-btn flat rounded color="secondary" label="已同意" @click="selectApproved"
+            style="margin-left: 20%;font-size: 105%; font-weight: normal;" />
+          <q-btn flat rounded color="secondary" label="已拒绝" @click="selectRejected"
+            style="margin-left: 20%; font-size: 105%; font-weight: normal" />
+        </div>
+
+        <q-separator style="width: 100%; margin-top: 1%;" />
+
+        <p v-if="!showRejectedApps && !showApprovedApps && !showRemainCheckedApps"
+          style="font-size: large; margin-top: 10%; margin-left: 40%;">
+          请选择您想要查看的申请类型
+        </p>
+
+        <div class="remainCheckedApps" v-if="showRemainCheckedApps">
+          <p style="font-size: large; margin-top: 2%; margin-left: 2%;">待批准的店铺申请</p>
+          <q-table :rows="rcShopAppRows" :columns="rcShopAppColumns" row-key="id" :pagination="true"
+            style="margin-top: 2%; margin-left: 1%;">
+            <template v-slot:body-cell-action="{ row }">
+              <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveApplication(row)" />
+              <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveApplication(row)" />
+            </template>
+          </q-table>
+
+          <q-separator style="width: 100%; margin-top: 3%;" />
+
+          <p style="font-size: large; margin-top: 2%; margin-left: 2%;">待批准的商品申请</p>
+          <!-- 待审批的上架申请 -->
+          <div v-for="commodity in rcCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
+            style="width: 350px; max-width: 100%;">
+            <q-card class="edit-commodity-card" style="width: 100%;">
+              <div class="q-pa-md">
+                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                  infinite>
+                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
+                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
+                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
+                </q-carousel>
+              </div>
+
+              <q-card-section>
+                <div class="row no-wrap items-center">
+                  <div class="col text-h6 ellipsis">
+                    {{ commodity.goodsName }}
+                  </div>
+                </div>
+                <div class="text-subtitle1">
+                  ¥ price: {{ commodity.price }}
+                </div>
+                <div class="text-caption text-grey">
+                  {{ commodity.description }}
+                </div>
+              </q-card-section>
+
+              <q-card-actions>
+                <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity.id)" />
+                <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityUpdate(commodity.id)" />
+              </q-card-actions>
+            </q-card>
+            <q-separator />
+          </div>
+          <!-- 待审批的修改信息申请 -->
+          <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+            style="width: 350px; max-width: 100%;">
+            <q-card class="edit-commodity-card" style="width: 100%;">
+              <div class="q-pa-md">
+                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                  infinite>
+                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
+                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
+                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
+                </q-carousel>
+              </div>
+
+              <q-card-section>
+                <div class="row no-wrap items-center">
+                  <div class="col text-h6 ellipsis">
+                    {{ commodity.goodsName }}
+                  </div>
+                </div>
+                <div class="text-subtitle1">
+                  ¥ price: {{ commodity.price }}
+                </div>
+                <div class="text-caption text-grey">
+                  {{ commodity.description }}
+                </div>
+              </q-card-section>
+
+              <q-card-actions>
+                <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity.id)" />
+                <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity.id)" />
+              </q-card-actions>
+            </q-card>
+          </div>
+        </div>
+
+        <div class="approvedApps" v-if="showApprovedApps">
+          <p style="font-size: large; margin-top: 2%; margin-left: 2%;">已批准的店铺申请</p>
+          <q-table :rows="aShopAppRows" :columns="aShopAppColumns" row-key="shopName" :pagination="true"
+            style="margin-top: 2%; margin-left: 1%;" />
+          <q-separator style="width: 100%; margin-top: 3%;" />
+
+          <!-- 已通过的上架申请 -->
+          <div v-for="commodity in aCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
+            style="width: 350px; max-width: 100%;">
+            <q-card class="edit-commodity-card" style="width: 100%;">
+              <div class="q-pa-md">
+                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                  infinite>
+                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
+                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
+                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
+                </q-carousel>
+              </div>
+
+              <q-card-section>
+                <div class="row no-wrap items-center">
+                  <div class="col text-h6 ellipsis">
+                    {{ commodity.goodsName }}
+                  </div>
+                </div>
+                <div class="text-subtitle1">
+                  ¥ price: {{ commodity.price }}
+                </div>
+                <div class="text-caption text-grey">
+                  {{ commodity.description }}
+                </div>
+              </q-card-section>
+
+            </q-card>
+            <q-separator />
+          </div>
+          <!-- 已通过的修改信息申请 -->
+          <div v-for="commodity in aCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+            style="width: 350px; max-width: 100%;">
+            <q-card class="edit-commodity-card" style="width: 100%;">
+              <div class="q-pa-md">
+                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                  infinite>
+                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
+                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
+                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
+                </q-carousel>
+              </div>
+
+              <q-card-section>
+                <div class="row no-wrap items-center">
+                  <div class="col text-h6 ellipsis">
+                    {{ commodity.goodsName }}
+                  </div>
+                </div>
+                <div class="text-subtitle1">
+                  ¥ price: {{ commodity.price }}
+                </div>
+                <div class="text-caption text-grey">
+                  {{ commodity.description }}
+                </div>
+              </q-card-section>
+
+            </q-card>
+          </div>
+
+        </div>
+
+        <div class="rejectedApps" v-if="showRejectedApps">
+          <p style="font-size: large; margin-top: 2%; margin-left: 2%;">已拒绝的店铺申请</p>
+          <q-table v-if="showRejectedApps" :rows="rShopAppRows" :columns="rShopAppColumns" row-key="name"
+            style="margin-top: 2%; margin-left: 1%;" />
+
+          <q-separator style="width: 100%; margin-top: 3%;" />
+
+          <!-- 已通过的上架申请 -->
+          <div v-for="commodity in rCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
+            style="width: 350px; max-width: 100%;">
+            <q-card class="edit-commodity-card" style="width: 100%;">
+              <div class="q-pa-md">
+                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                  infinite>
+                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
+                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
+                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
+                </q-carousel>
+              </div>
+
+              <q-card-section>
+                <div class="row no-wrap items-center">
+                  <div class="col text-h6 ellipsis">
+                    {{ commodity.goodsName }}
+                  </div>
+                </div>
+                <div class="text-subtitle1">
+                  ¥ price: {{ commodity.price }}
+                </div>
+                <div class="text-caption text-grey">
+                  {{ commodity.description }}
+                </div>
+              </q-card-section>
+
+            </q-card>
+            <q-separator />
+          </div>
+          <!-- 已通过的修改信息申请 -->
+          <div v-for="commodity in rCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+            style="width: 350px; max-width: 100%;">
+            <q-card class="edit-commodity-card" style="width: 100%;">
+              <div class="q-pa-md">
+                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                  infinite>
+                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
+                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
+                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
+                </q-carousel>
+              </div>
+
+              <q-card-section>
+                <div class="row no-wrap items-center">
+                  <div class="col text-h6 ellipsis">
+                    {{ commodity.goodsName }}
+                  </div>
+                </div>
+                <div class="text-subtitle1">
+                  ¥ price: {{ commodity.price }}
+                </div>
+                <div class="text-caption text-grey">
+                  {{ commodity.description }}
+                </div>
+              </q-card-section>
+
+            </q-card>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 商城中间账户展示 -->
+      <div class="transitionAccount" v-if="showTransition && !showAllApplycation && !showProfit">
+        <q-card class="my-card" flat bordered style="max-width: 100%; width: 70%; margin-left: 5%; margin-top: 3%;">
+
+          <q-card-section>
+            <div class="text-overline text-orange-9">商城中间账户</div>
+            <div class="text-h5 q-mt-sm q-mb-xs">余额：¥{{ intermediateAccount }}</div>
+          </q-card-section>
+
+          <q-card-actions>
+            <!-- <div class="cursor-pointer" style="width: 100px; margin-left: 10%;">
+              充值
+              <q-popup-edit v-model="label" auto-save>
+                <q-input v-model="money" hint="请输入充值金额" dense autofocus counter @keyup.enter="topUpAccount" />
+              </q-popup-edit>
+            </div> -->
+            <q-btn flat color="secondary" label="点击右侧下拉查看转账记录" style="margin-left: 0.5%;" />
+
+            <q-space />
+
+            <q-btn color="grey" round flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              @click="expanded = !expanded" />
+          </q-card-actions>
+
+          <!-- <q-slide-transition>
+            <div v-show="expanded">
+              <q-separator />
+              <q-card-section class="text-subitle2">
+                {{ transition }}
+              </q-card-section>
+            </div>
+          </q-slide-transition> -->
+        </q-card>
+      </div>
+
+      <!-- 商城利润账户展示 -->
+      <div class="profitAccount" v-if="showProfit && !showTransitio && !showAllApplycation">
+        <q-card class="my-card" flat bordered style="max-width: 100%; width: 70%; margin-left: 5%; margin-top: 3%;">
+
+          <q-card-section>
+            <div class="text-overline text-orange-9">商城利润账户</div>
+            <div class="text-h5 q-mt-sm q-mb-xs">目前利润：¥{{ profitAccount }}</div>
+          </q-card-section>
+
+          <q-card-actions>
+            <!-- <div class="cursor-pointer" style="width: 100px; margin-left: 10%;">
+              充值
+              <q-popup-edit v-model="label" auto-save>
+                <q-input v-model="money" hint="请输入充值金额" dense autofocus counter @keyup.enter="topUpAccount" />
+              </q-popup-edit>
+            </div> -->
+            <q-btn flat color="secondary" label="点击右侧下拉查看流水" style="margin-left: 0.5%;" />
+
+            <q-space />
+
+            <q-btn color="grey" round flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              @click="expanded = !expanded" />
+          </q-card-actions>
+
+          <q-slide-transition>
+            <div v-show="expanded">
+              <q-separator />
+              <q-card-section class="text-subitle2">
+                {{ transition }}
+              </q-card-section>
+            </div>
+          </q-slide-transition>
+        </q-card>
+      </div>
+    </q-page-container>
+  </q-layout>
+</template>
+
+
+<script setup>
+import { ref } from 'vue'
+import axios from 'axios'
+import { onMounted } from 'vue'
+import { useQuasar } from 'quasar'
+
+const q = useQuasar();
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:9999',
+});
+
+let leftDrawerOpen = ref(false)
+let showTransition = ref(false)
+let showAllApplycation = ref(true)
+let showProfit = ref(false)
+let showApprovedApps = ref(false)
+let showRejectedApps = ref(false)
+let showRemainCheckedApps = ref(false)
+const username = ref('admin')
+let selected = ref([])
+let errorMsg = ref(null)
+let response_register = ref(null)
+let intermediateAccount = ref(0)
+let profitAccount = ref(0)
+let shopName = ref(null)
+
+// 已同意的商店申请
+let aShopAppColumns = [
+  {
+    name: 'applicationType',
+    required: true,
+    label: '申请类型',
+    align: 'left',
+    field: row => row.status,
+    format: val => `${val}`,
+    sortable: false
+  },
+  {
+    name: 'shopName',
+    required: true,
+    label: '店铺名称',
+    align: 'left',
+    field: row => row.shopName,
+    format: val => `${val}`,
+    sortable: false
+  },
+  {
+    name: 'category',
+    required: true,
+    label: '商品类别',
+    align: 'left',
+    field: row => row.category,
+    format: val => {
+      if (Array.isArray(val)) {
+        return val.join(', ')
+      } else if (typeof val === 'object' && val !== null && val.id && val.text) {
+        return `${val.id} - ${val.text}`
+      } else {
+        return ''
+      }
+    },
+    sortable: true
+  },
+  { name: 'idNumber', label: '申请人身份证号', field: 'idNumber' },
+  { name: 'introduce', label: '商店简介', field: 'introduce' },
+  { name: 'address', label: '备案地址', field: 'address' },
+  { name: 'fund', label: '注册资金', field: 'fund', sortable: true, sort: (a, b) => parseFloat(a, 10) - parseFloat(b, 10) },
+  { name: 'registrationTime', label: '申请时间 YYYY-MM-DD', field: 'registrationTime', sortable: false },
+]
+let aShopAppRows = ref([])
+
+// 已同意的商品申请
+// TODO: 修改商品申请的信息
+let aCommodityUpApp = ref([])
+let aCommodityEditApp = ref([])
+
+// 已拒绝的商店申请
+let rShopAppColumns = [
+  {
+    name: 'applicationType',
+    required: true,
+    label: '申请类型',
+    align: 'left',
+    field: row => row.status,
+    format: val => `${val}`,
+    sortable: false
+  },
+  {
+    name: 'shopName',
+    required: true,
+    label: '店铺名称',
+    align: 'left',
+    field: row => row.shopName,
+    format: val => `${val}`,
+    sortable: false
+  },
+  {
+    name: 'category',
+    required: true,
+    label: '商品类别',
+    align: 'left',
+    field: row => row.category,
+    format: val => {
+      if (Array.isArray(val)) {
+        return val.join(', ')
+      } else if (typeof val === 'object' && val !== null && val.id && val.text) {
+        return `${val.id} - ${val.text}`
+      } else {
+        return ''
+      }
+    },
+    sortable: true
+  },
+  { name: 'idNumber', label: '申请人身份证号', field: 'idNumber' },
+  { name: 'introduce', label: '商店简介', field: 'introduce' },
+  { name: 'address', label: '备案地址', field: 'address' },
+  { name: 'fund', label: '注册资金', field: 'fund', sortable: true, sort: (a, b) => parseFloat(a, 10) - parseFloat(b, 10) },
+  { name: 'registrationTime', label: '申请时间 YYYY-MM-DD', field: 'registrationTime', sortable: false },
+]
+let rShopAppRows = ref([])
+
+// 已拒绝的商品申请
+let rCommodityUpApp = ref([])
+let rCommodityEditApp = ref([])
+
+// 待查看的店铺申请
+let rcShopAppColumns = [
+  {
+    name: 'applicationType',
+    required: true,
+    label: '申请类型',
+    align: 'left',
+    field: row => row.status,
+    format: val => `${val}`,
+    sortable: false
+  },
+  {
+    name: 'shopName',
+    required: true,
+    label: '店铺名称',
+    align: 'left',
+    field: row => row.shopName,
+    format: val => `${val}`,
+    sortable: false
+  },
+  {
+    name: 'category',
+    required: true,
+    label: '商品类别',
+    align: 'left',
+    field: row => row.category,
+    format: val => {
+      if (Array.isArray(val)) {
+        return val.join(', ')
+      } else if (typeof val === 'object' && val !== null && val.id && val.text) {
+        return `${val.id} - ${val.text}`
+      } else {
+        return ''
+      }
+    },
+    sortable: true
+  },
+  { name: 'idNumber', label: '申请人身份证号', field: 'idNumber' },
+  { name: 'introduce', label: '商店简介', field: 'introduce' },
+  { name: 'address', label: '备案地址', field: 'address' },
+  { name: 'fund', label: '注册资金', field: 'fund', sortable: true, sort: (a, b) => parseFloat(a, 10) - parseFloat(b, 10) },
+  { name: 'registrationTime', label: '申请时间 YYYY-MM-DD', field: 'registrationTime', sortable: false },
+  {
+    name: 'action',
+    label: '同意申请',
+    field: 'action',
+    align: 'center',
+    sortable: false
+  },
+]
+let rcShopAppRows = ref([])
+
+// 待查看的商品申请
+let rcCommodityUpApp = ref([])
+let rcCommodityEditApp = ref([])
+
+onMounted(() => {
+  // 获取所有待审批的商店信息：开店/闭店
+  axiosInstance.post('/shop/showByStatus0_3').then((response) => {
+    const r = response.data['data']
+    console.log('get rc shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 0:
+          obj.status = '申请开店';
+          break;
+        case 3:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    rcShopAppRows.value.splice(0, rcShopAppRows.value.length, ...r);
+    console.log('rc shop value: ', rcShopAppRows.value)
+  });
+
+  // 获取所有通过审批的商店信息：开店/闭店
+  axiosInstance.post('/shop/showByStatus1_4').then((response) => {
+    const r = response.data['data']
+    console.log('get approved shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 1:
+          obj.status = '申请开店';
+          break;
+        case 4:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    aShopAppRows.value.splice(0, aShopAppRows.value.length, ...r);
+    console.log(aShopAppRows.value)
+  });
+
+  // 获取所有已拒绝审批的商店信息：开店/闭店
+  axiosInstance.post('/shop/showByStatus2_5').then((response) => {
+    const r = response.data['data']
+    console.log('get delete shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 2:
+          obj.status = '申请开店';
+          break;
+        case 5:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    rShopAppRows.value.splice(0, rShopAppRows.value.length, ...r);
+    console.log(rShopAppRows.value)
+  });
+
+  // 请求所有待审批上架的商品信息
+  axiosInstance.get('/Goods/showAddApply').then((response) => {
+    const r = response.data['data']
+    // r.forEach(function (item) {
+    //   // console.log(item.id)
+    //   // item.id is shopId!
+    //   item.shopName = getShopName(r.shopId)
+    // });
+    console.log('get 待审批上架商品 msg: ', r);
+    rcCommodityUpApp.value.splice(0, rcCommodityUpApp.value.length, ...r);
+    console.log("申请待审批上架商品后：", rcCommodityUpApp.value)
+  });
+
+  // 请求所有待审批修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateApply').then((response) => {
+    const r = response.data['data']
+    // r.forEach(function (item) {
+    //   // console.log(item.id)
+    //   // item.id is shopId!
+    //   item.shopName = getShopName(r.shopId)
+    // });
+    console.log('get 待审批修改商品 msg: ', r);
+    rcCommodityEditApp.value.splice(0, rcCommodityEditApp.value.length, ...r);
+    console.log("申请待审批修改商品后：", rcCommodityEditApp.value)
+  });
+
+    // 请求所有已通过上架的商品信息
+    axiosInstance.get('/Goods/showAddApproved').then((response) => {
+    const r = response.data['data']
+    // r.forEach(function (item) {
+    //   // console.log(item.id)
+    //   // item.id is shopId!
+    //   item.shopName = getShopName(r.shopId)
+    // });
+    console.log('get 已通过上架商品 msg: ', r);
+    aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("已通过上架商品后：", aCommodityUpApp.value)
+  });
+
+  // 请求所有已通过修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateApproved').then((response) => {
+    const r = response.data['data']
+    // r.forEach(function (item) {
+    //   // console.log(item.id)
+    //   // item.id is shopId!
+    //   item.shopName = getShopName(r.shopId)
+    // });
+    console.log('get 已通过修改商品 msg: ', r);
+    aCommodityEditApp.value.splice(0, aCommodityEditApp.value.length, ...r);
+    console.log("申请已通过修改商品后：", aCommodityEditApp.value)
+  });
+
+    // 请求所有已驳回上架的商品信息
+    axiosInstance.get('/Goods/showAddRejected').then((response) => {
+    const r = response.data['data']
+    // r.forEach(function (item) {
+    //   // console.log(item.id)
+    //   // item.id is shopId!
+    //   item.shopName = getShopName(r.shopId)
+    // });
+    console.log('get 已驳回上架商品 msg: ', r);
+    rCommodityUpApp.value.splice(0, rCommodityUpApp.value.length, ...r);
+    console.log("已驳回上架商品后：", rCommodityUpApp.value)
+  });
+
+  // 请求所有已驳回修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateRejected').then((response) => {
+    const r = response.data['data']
+    // r.forEach(function (item) {
+    //   // console.log(item.id)
+    //   // item.id is shopId!
+    //   item.shopName = getShopName(r.shopId)
+    // });
+    console.log('get 已驳回修改商品 msg: ', r);
+    rCommodityEditApp.value.splice(0, rCommodityEditApp.value.length, ...r);
+    console.log("申请已驳回修改商品后：", rCommodityEditApp.value)
+  });
+
+  // 获取商城中间账号信息
+  axiosInstance.post('/admin/getIntermediateAccount').then((response) => {
+    const r = response.data['data']
+    console.log('get intermediate account msg: ', r);
+    intermediateAccount.value = r
+  });
+
+  // 获取商城利润账户信息
+  axiosInstance.post('/admin/getProfitAccount').then((response) => {
+    const r = response.data['data']
+    console.log('get profile account msg: ', r);
+    profitAccount.value = r
+  });
+})
+
+function showTransitionMode() {
+  showTransition.value = true
+  showAllApplycation.value = false
+  showProfit.value = false
+}
+
+function showProfitMode() {
+  showProfit.value = true
+  showAllApplycation.value = false
+  showAllApplycation.value = false
+}
+
+function selectRemainChecked() {
+  showApprovedApps.value = false
+  showRejectedApps.value = false
+  showRemainCheckedApps.value = true
+}
+
+function selectApproved() {
+  showApprovedApps.value = true
+  showRejectedApps.value = false
+  showRemainCheckedApps.value = false
+}
+
+function selectRejected() {
+  showApprovedApps.value = false
+  showRejectedApps.value = true
+  showRemainCheckedApps.value = false
+}
+
+// function getShopName(shopId) {
+//   axiosInstance.get('/shop/showShopByShopId', {
+//     shopId: shopId, 
+//   }).then((response) => {
+//     const r = response.data['data']
+//     console.log('get shop name: ', r);
+//   });
+// }
+
+// 同意申请
+function approveApplication(rcShopAppRow) {
+  // 根据行的id执行同意申请操作
+  console.log('同意申请传参: ', rcShopAppRow)
+  if (rcShopAppRow.status === '申请开店') {
+    axiosInstance.put('/shop/approve', {
+      id: rcShopAppRow.id,
+      userId: rcShopAppRow.userId,
+      fund: rcShopAppRow.fund,
+    }).then((response) => {
+      const r = response.data['data']
+      console.log('response data: ', r);
+    }).catch((error) => {
+      console.error('Error:', error);
+      // 处理错误
+      errorMsg.value = response_register.value['message']
+    });
+  }
+  else if (rcShopAppRow.status === '申请闭店') {
+    axiosInstance.post('/shop/approveDelete', {
+      id: rcShopAppRow.id,
+      account: rcShopAppRow.account,
+      userId: rcShopAppRow.userId,
+    }).then((response) => {
+      const r = response.data['data']
+      console.log(r);
+    }).catch((error) => {
+      console.error('Error:', error);
+      // 处理错误
+    });
+  }
+  axiosInstance.post('/shop/showByStatus1_4').then((response) => {
+    const r = response.data['data']
+    console.log('get approved shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 1:
+          obj.status = '申请开店';
+          break;
+        case 4:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    aShopAppRows.value.splice(0, aShopAppRows.value.length, ...r);
+    console.log(aShopAppRows.value)
+  });
+}
+
+function disapproveApplication(rcShopAppRow) {
+  // 根据行的id执行同意申请操作
+  console.log('拒绝申请传参: ', rcShopAppRow)
+  if (rcShopAppRow.status === '申请开店') {
+    axiosInstance.put('/shop/disapprove', {
+      id: rcShopAppRow.id,
+      userId: rcShopAppRow.userId,
+      fund: rcShopAppRow.fund,
+    }).then((response) => {
+      const r = response.data['data']
+      console.log('response data: ', r);
+    }).catch((error) => {
+      console.error('Error:', error);
+      // 处理错误
+      errorMsg.value = response_register.value['message']
+    });
+  }
+  else if (rcShopAppRow.status === '申请闭店') {
+    axiosInstance.post('/shop/disapproveDelete', {
+      id: rcShopAppRow.id,
+      userId: rcShopAppRow.userId,
+      account: rcShopAppRow.account,
+    }).then((response) => {
+      const r = response.data['data']
+      console.log(r);
+    }).catch((error) => {
+      console.error('Error:', error);
+      // 处理错误
+    });
+  }
+}
+
+function approveCommodityUpdate(goodId) {
+  console.log('同意商品上架传参：', goodId)
+  axiosInstance.put('/Goods/addGoodsApprove', {
+    goodsId: goodId, 
+  }, {params: { 
+      goodsId: goodId, 
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get 同意商品上架 msg: ', r);
+  });
+}
+
+function disapproveCommodityUpdate(good) {
+  console.log('不同意商品上架传参：', good, '\nid: ', good.id)
+  axiosInstance.put('/Goods/addGoodsApprove', {
+    goodsId: goodId, 
+  }, {params: { 
+      goodsId: goodId, 
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get 不同意商品上架 msg: ', r);
+  });
+}
+
+function approveCommodityEdit(goodId) {
+  console.log('同意商品修改传参：', goodId)
+  axiosInstance.put('/Goods/updateGoodsApprove', {
+    goodsId: goodId, 
+  }, {params: { 
+      goodsId: goodId, 
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get 同意商品修改 msg: ', r);
+  });
+}
+
+function disapproveCommodityEdit(goodId) {
+  console.log('不同意商品修改传参：', goodId)
+  axiosInstance.put('/Goods/updateGoodsReject', {
+    goodsId: goodId, 
+  }, {params: { 
+      goodsId: goodId, 
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get 不同意商品修改 msg: ', r);
+  });
+}
+
+// 刷新button事件
+// function updata() {
+//   axiosInstance.post('/shop/showByStatus0_3').then((response) => {
+//     const r = response.data['data']
+//     r.map(obj => {
+//       const [year, month, day] = obj.registrationTime;
+//       obj.registrationTime = `${year}-${month}-${day}`;
+//       return obj;
+//     });
+//     rows.value.splice(0, rows.value.length, ...r);
+//     console.log(rows.value)
+//   });
+//   instance.proxy.$forceUpdate();
+//   axiosInstance.post('/shop/showByStatus3_4').then((response) => {
+//     const r = response.data['data']
+//     console.log('get delete shop msg: ', r);
+//     r.forEach(function (item) {
+//       // console.log(item.id)
+//       // item.is is shopId!
+//       shopId.value = item.id;
+//       fund.value = r[0]['fund'];
+//     });
+//     r.map(obj => {
+//       const [year, month, day] = obj.registrationTime;
+//       obj.registrationTime = `${year}-${month}-${day}`;
+//       return obj;
+//     });
+//     rows.value.splice(0, rows.value.length, ...r);
+//     console.log(rows.value)
+//   });
+//   instance.proxy.$forceUpdate();
+//   axiosInstance.post('/shop/showByStatus2_5').then((response) => {
+//     const r = response.data['data']
+//     r.map(obj => {
+//       const [year, month, day] = obj.registrationTime;
+//       obj.registrationTime = `${year}-${month}-${day}`;
+//       return obj;
+//     });
+//     rShopAppRows.value.splice(0, rShopAppRows.value.length, ...r);
+//     console.log(rShopAppRows.value)
+//   });
+// }
+
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+// 深色模式
+function toggle() {
+  q.dark.toggle();
+}
+
+
+// ？
+function getSelectedString() {
+  return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${rows.value.length}`
+}
+</script>
+
+<style>
+.router-link-class {
+  color: inherit;
+  text-decoration: none;
+}
+</style>

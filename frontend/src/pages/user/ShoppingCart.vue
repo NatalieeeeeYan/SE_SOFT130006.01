@@ -1,0 +1,177 @@
+<template>
+  <q-layout view="hHh lpR fFf">
+
+    <q-header elevated class="bg-primary text-white">
+      <q-toolbar>
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+        <q-toolbar-title>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+          </q-avatar>
+          购物车
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container>
+      <router-view />
+      <div class="q-pa-md row items-start q-gutter-md">
+        <!--用户信息展示-->
+        <!-- <q-card class="my-card" flat bordered style="width: 280px">
+          <q-card-section horizontal>
+            <q-card-section class="q-pt-xs">
+              <div class="text-overline">Overline</div>
+              <div class="text-h5 q-mt-sm q-mb-xs">{{ username }}</div>
+              <div class="text-caption text-grey">
+
+              </div>
+            </q-card-section>
+
+            <q-card-section class="col-5 flex flex-center">
+              <q-img :src="url" style="border-radius: 50%;" />
+            </q-card-section>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-actions>
+            <q-btn flat icon="logout" color="accent" to="/login">
+              Logout
+            </q-btn>
+            <q-btn flat icon="settings" color="accent" to="/accountInfo">
+              Settings
+            </q-btn>
+          </q-card-actions>
+        </q-card> -->
+
+        <div class="q-pa-ma" style="width:400px;">
+          <div style="width:300px;">
+            <q-img :src="url" style="border-radius: 50%; left:50px" />
+            <div class="text-h5 q-mt-sm q-mb-xs" style="margin-left:70px"> {{ username }}</div>
+
+            <q-separator style="margin-left:50px" />
+            <div class="col-auto text-grey text q-pt-md row no-wrap items-center" style="margin-left:70px">
+              <q-icon name="place" />
+              Shanghai, China
+            </div>
+          </div>
+        </div>
+
+        <!--购物车商品展示-->
+        <div class="q-pa-ma">
+          <div>
+            <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
+              narrow-indicator>
+              <q-tab name="Commodity" label="Commodity" />
+            </q-tabs>
+
+            <q-separator />
+
+            <q-tab-panels v-model="tab" animated>
+              <q-tab-panel name="Commodity">
+                <div class="flex justify-center">
+                  <q-scroll-area :visible="visible" style="height: 620px; width: 900px;" class="flex justify-center">
+                    <div class="flex q-justify-around" style="width: 900px;">
+                      <div v-for="commodity in commodities" :key="commodity" class="flex q-py-xs justify-around"
+                        style="width: 900px;">
+                        <q-card class="shop-card" flat bordered>
+                          <q-card-section horizontal>
+                            <q-card-section class="q-pt-xs">
+                              <div class="text-overline">Overline</div>
+                              <div class="text-h5 q-mt-sm q-mb-xs">{{ commodity.goodsName }}</div>
+                              <div class="text-caption text-grey">
+                                {{ commodity.description }}
+                              </div>
+                            </q-card-section>
+
+                            <q-card-section class="col-5 flex flex-center">
+                              <q-img class="rounded-borders" src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                            </q-card-section>
+                          </q-card-section>
+
+                          <q-separator />
+
+                          <q-card-actions>
+                            <q-card-section horizontal>
+                              <q-checkbox v-model="selectedCommodities[commodity.id]" />
+                            </q-card-section>
+                            <q-btn flat color="primary" @click="singel_delete(commodity.id)">
+                              Delete
+                            </q-btn>
+                          </q-card-actions>
+                        </q-card>
+                      </div>
+                    </div>
+                  </q-scroll-area>
+                </div>
+              </q-tab-panel>
+            </q-tab-panels>
+          </div>
+        </div>
+
+        <div>
+          <q-btn round color="purple" icon="delete" class="absolute" to="/userShoppingCart" @click="batch_delete"
+            style="top: 600px; right: 50px; transform: translateY(-50%);" size="30px">
+          </q-btn>
+        </div>
+      </div>
+
+
+    </q-page-container>
+  </q-layout>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { useStore } from 'src/store'
+import axios from 'axios'
+import { onMounted } from 'vue'
+
+const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
+const store = useStore()
+const username = ref('primerL')
+const tab = ref("Commodity")
+const expanded = ref(false)
+const shoppingCartNumber = ref(1)
+
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:9999',
+});
+const shops = ref([])
+
+const commodities = ref([])
+
+const selectedCommodities = ref([]) // 存储选中的商品
+
+function batch_delete() {
+  console.log(selectedCommodities.value)
+}
+
+function singel_delete(id) {
+  console.log(id)
+}
+
+
+onMounted(() => {
+  //userId全局变量
+  axiosInstance.get('/cart/showList',
+  {
+    params:{
+      userId:1
+    }
+  }).then((res)=>{
+    console.log("res")
+    console.log(res.data)
+    commodities.value = res.data.data
+  });
+});
+</script>
+
+<style lang="sass" scoped>
+.shop-card
+  width: 100%
+  width: 700px
+  height: 100%
+  max-height: 300px
+
+</style>

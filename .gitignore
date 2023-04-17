@@ -1,0 +1,10 @@
+frontend/.quasar/
+frontend/.vscode/
+frontend/dist/
+frontend/node_modules/
+mysql/
+*.jpeg
+ShopSystem/.idea/
+ShopSystem/.mvn/
+ShopSystem/target/
+ShopSystem/uploadImage/
