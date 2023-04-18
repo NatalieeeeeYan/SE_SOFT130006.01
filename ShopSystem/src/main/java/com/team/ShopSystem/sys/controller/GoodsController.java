@@ -118,6 +118,42 @@ public class GoodsController {
         return Result.success(goodsUpdate);
     }
 
+    @GetMapping("/showAddApproved")
+    @ApiOperation("显示所有已批准上架的商品,给admin")
+    public Result<List<Goods>> showAddApproved(){
+        List<Goods> list = goodsMapper.getByStatus(1);
+        for (Goods goods : list) {
+            goods.setImage(goodsImageMapper.getByGoodsId(goods.getId()));
+        }
+        return Result.success(list);
+    }
+    @GetMapping("/showAddRejected")
+    @ApiOperation("显示所有已拒绝上架的商品,给admin")
+    public Result<List<Goods>> showAddRejected(){
+        List<Goods> list = goodsMapper.getByStatus(2);
+        for (Goods goods : list) {
+            goods.setImage(goodsImageMapper.getByGoodsId(goods.getId()));
+        }
+        return Result.success(list);
+    }
+    @GetMapping("/showUpdateApproved")
+    @ApiOperation("显示所有已批准修改的商品,给admin")
+    public Result<List<Goods>> showUpdateApproved(){
+        List<Goods> list = goodsMapper.getByStatus(8);
+        for (Goods goods : list) {
+            goods.setImage(goodsImageMapper.getByGoodsId(goods.getId()));
+        }
+        return Result.success(list);
+    }
+    @GetMapping("/showUpdateRejected")
+    @ApiOperation("显示所有已拒绝修改的商品,给admin")
+    public Result<List<Goods>> showUpdateRejected(){
+        List<Goods> list = goodsMapper.getByStatus(9);
+        for (Goods goods : list) {
+            goods.setImage(goodsImageMapper.getByGoodsId(goods.getId()));
+        }
+        return Result.success(list);
+    }
 
     @GetMapping("/showShopAllGoods")
     @ApiOperation("显示某商店的所有状态的商品")
@@ -181,6 +217,16 @@ public class GoodsController {
     @ApiOperation("显示某商店的修改申请记录之失败")
     public Result<List<Goods>> showUpdateRecord_9(@RequestParam Integer shopId){
         List<Goods> list = goodsMapper.getByShopStatus(shopId,9);
+        for (Goods goods : list) {
+            goods.setImage(goodsImageMapper.getByGoodsId(goods.getId()));
+        }
+        return Result.success(list);
+    }
+
+    @GetMapping("/showDeleteRecord_5")
+    @ApiOperation("显示某商店的已下架商品")
+    public Result<List<Goods>> showDeleteRecord_5(@RequestParam Integer shopId){
+        List<Goods> list = goodsMapper.getByShopStatus(shopId,5);
         for (Goods goods : list) {
             goods.setImage(goodsImageMapper.getByGoodsId(goods.getId()));
         }

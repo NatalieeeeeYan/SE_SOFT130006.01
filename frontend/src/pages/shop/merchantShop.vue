@@ -17,54 +17,185 @@
       </q-toolbar>
     </q-header>
 
+    <q-drawer v-model="leftDrawerOpen" :width="280">
+      <q-scroll-area class="fit">
+        <q-list padding class="text-grey-8" style="margin-top: 3%;">
+          <q-item class="GNL__drawer-item" v-ripple v-for="link in links1" :key="link.text" clickable
+            @click="handleClick(link)" style="margin-top: 3%;">
+            <q-item-section avatar>
+              <q-icon :name="link.icon" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ link.text }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-separator inset class="q-my-sm" style="margin-top: 4%;" />
+
+          <q-item class="GNL__drawer-item" v-ripple v-for="link in links2" :key="link.text" clickable
+            @click="handleClick(link)" style="margin-top: 3%;">
+            <q-item-section avatar>
+              <q-icon :name="link.icon" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ link.text }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item class="GNL__drawer-item" :to="isMerchant ? '/merchantpage' : '/user'" exact style="margin-top: 3%;">
+            <q-item-section avatar>
+              <q-icon name="font_download" />
+            </q-item-section>
+
+            <q-item-section>
+              个人主页
+            </q-item-section>
+          </q-item>
+
+          <!-- 待写：帮助页面 -->
+          <q-item class="GNL__drawer-item" to="/help" exact style="margin-top: 3%;">
+            <q-item-section avatar>
+              <q-icon name="open_in_new" />
+            </q-item-section>
+
+            <!-- TODO: 完善帮助页面 -->
+            <q-item-section>
+              帮助
+            </q-item-section>
+          </q-item>
+
+          <q-item class="GNL__drawer-item" to="/contact" exact style="margin-top: 3%;">
+            <q-item-section avatar>
+              <q-icon name="send" />
+            </q-item-section>
+
+            <!-- TODO: 完善联系页面 -->
+            <q-item-section>
+              联系我们
+            </q-item-section>
+          </q-item>
+
+          <q-separator inset class="q-my-sm" style="margin-top: 3%;" />
+
+          <div class="q-mt-md" style="margin-top: 6%;">
+            <!-- TODO: 完善说明页面，并添加链接 -->
+            <div class="flex flex-center q-gutter-xs">
+              <a class="GNL__drawer-footer-link" href="javascript:void(0)" aria-label="Privacy">Privacy</a>
+              <span> · </span>
+              <a class="GNL__drawer-footer-link" href="javascript:void(0)" aria-label="Terms">Terms</a>
+            </div>
+            <div class="logoutLink flex flex-center q-gutter-xs" style="margin-top: 3%;">
+              <a class="GNL__drawer-footer-link" href='/#/login' style="font-weight: bold;">Logout</a>
+
+            </div>
+          </div>
+        </q-list>
+      </q-scroll-area>
+    </q-drawer>
+
     <q-page-container>
       <router-view />
       <div class="q-pa-md row items-start q-gutter-md">
         <!--商店基本信息-->
-        <div class="q-pa-ma" style="width:400px;">
+        <div class="q-pa-ma" style="width:100%;">
           <div style="width:300px;">
-            <q-img :src="url" style="border: 50%; left:50px" />
-            <div class="text-h4 q-mt-sm q-mb-xs" style="margin-left:100px;height:50px"> {{ shopName }}</div>
+            <!-- <q-img :src="url" style="border: 50%; left:50px" /> -->
+            <div class="text-h4 q-mt-sm q-mb-xs" style="margin-left:3%; height:50px"> 店铺名称：{{ shopName }}</div>
             <div>
-              <q-separator style="margin-left:80px" />
+              <q-separator />
             </div>
-            <div class="text-caption text-grey" style="margin-left:90px; max-height:50px">
-              {{ shopIntroduce }}
+            <div class="text-caption text-grey" style="margin-left:3%; margin-top: 3%;">
+              店铺介绍：{{ shopIntroduce }}
             </div>
-            <div class="col-auto text-grey text-h6 q-pt-md row no-wrap items-center"
-              style="margin-left:80px; height:50px">
+            <div class="col-auto text-grey text-h6 q-pt-md row no-wrap items-center" style="margin-left:3%; ">
               <q-icon name="place" />
-              {{ shopAddress }}
+              店铺地址：{{ shopAddress }}
             </div>
-            <div class="text-grey text-h6" style="margin-left:80px; max-height:50px">
-              注册时间 {{ shopRegistrationTime }}
+            <div class="text-grey text-h6" style="margin-left:3%; ">
+              <q-icon name="alarm" />
+              注册时间：{{ shopRegistrationTime }}
             </div>
           </div>
         </div>
 
         <!--商店商品展示-->
-        <div class="q-pa-ma">
+        <div class="q-pa-ma" style="width: 100%;">
           <div>
             <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
               narrow-indicator>
-              <q-tab name="Commodity" label="Commodity" />
-              <!-- <q-tab name="changeMessage" label="changeMessage" /> -->
+              <q-tab name="onShelve" label="在售商品" />
+              <q-tab name="applications" label="商品修改申请" />
+              <q-tab name="removals" label="已下架商品" />
+
             </q-tabs>
 
             <q-separator />
 
             <q-tab-panels v-model="tab" animated>
-              <q-tab-panel name="Commodity">
+              <q-tab-panel name="onShelve">
                 <div class="flex justify-center">
-                  <q-scroll-area :visible="visible" style="height: 620px; width: 900px;" class="flex justify-center">
+                  <q-scroll-area :visible="visible" style="height: 620px; width: 100%;" class="flex justify-center">
                     <div class="flex q-justify-around" style="width: 900px;">
-                      <div v-for="commodity in commodities" :key="commodity" class="flex q-py-xs justify-around"
+                      <div v-for="commodity in onShelveCmdt" :key="commodity" class="flex q-py-xs justify-around"
                         style="width: 450px;">
                         <q-card class="my-card">
                           <div class="q-pa-md">
-                            <q-carousel class="commodity_img" swipeable
-                              animated v-model="commodity.slide" height="200px" thumbnails infinite>
-                              <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1" :img-src="image" />
+                            <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px"
+                              thumbnails infinite>
+                              <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                                :img-src="image" />
+                            </q-carousel>
+                          </div>
+
+                          <q-card-section>
+                            <q-btn fab color="primary" icon="delete" class="absolute"
+                              style="top: 0; right: 12px; transform: translateY(-50%);"
+                              @click="deleteCommodity(commodity)" />
+
+                            <div class="row no-wrap items-center">
+                              <div class="col text-h6 ellipsis">
+                                <q-btn flat class="text-h6" @click="toEditCommodity(commodity)">
+                                  {{ commodity.goodsName }}
+                                </q-btn>
+                              </div>
+                              <!-- <div class="col-auto text-grey text-caption q-pt-md row no-wrap items-center">
+                                下架商品
+                              </div> -->
+                            </div>
+
+                            <q-separator />
+                            <!-- <q-rating v-model="stars" :max="5" size="32px" /> -->
+                            <div class="text-subtitle3" style="margin-top: 3%;">
+                              状态: {{ commodity.status }}
+                            </div>
+                            <div class="text-subtitle1">
+                              ¥ price: {{ commodity.price }}
+                            </div>
+                            <div class="text-caption text-grey">
+                              {{ commodity.description }}
+                            </div>
+                          </q-card-section>
+                        </q-card>
+                        <q-separator />
+
+                      </div>
+                    </div>
+                  </q-scroll-area>
+                </div>
+              </q-tab-panel>
+
+              <q-tab-panel name="applications">
+                <div class="flex justify-center">
+                  <q-scroll-area :visible="visible" style="height: 620px; width: 100%;" class="flex justify-center">
+                    <div class="flex q-justify-around" style="width: 900px;">
+                      <div v-for="commodity in applyingCmdt" :key="commodity" class="flex q-py-xs justify-around"
+                        style="width: 450px;">
+                        <q-card class="my-card">
+                          <div class="q-pa-md">
+                            <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px"
+                              thumbnails infinite>
+                              <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                                :img-src="image" />
                             </q-carousel>
                           </div>
 
@@ -75,7 +206,59 @@
 
                             <div class="row no-wrap items-center">
                               <div class="col text-h6 ellipsis">
-                                <q-btn flat class="text-h6" @click="toEditCommodity(commodity)">
+                                <q-btn flat class="text-h6">
+                                  {{ commodity.goodsName }}
+                                </q-btn>
+                              </div>
+                              <!-- <div class="col-auto text-grey text-caption q-pt-md row no-wrap items-center">
+                                下架商品
+                              </div> -->
+                            </div>
+
+                            <q-separator />
+                            <!-- <q-rating v-model="stars" :max="5" size="32px" /> -->
+                            <div class="text-subtitle3" style="margin-top: 3%;">
+                              状态: {{ commodity.status }}
+                            </div>
+                            <div class="text-subtitle1">
+                              ¥ price: {{ commodity.price }}
+                            </div>
+                            <div class="text-caption text-grey">
+                              {{ commodity.description }}
+                            </div>
+                          </q-card-section>
+                        </q-card>
+                        <q-separator />
+
+                      </div>
+                    </div>
+                  </q-scroll-area>
+                </div>
+              </q-tab-panel>
+
+              <q-tab-panel name="removals">
+                <div class="flex justify-center">
+                  <q-scroll-area :visible="visible" style="height: 620px; width: 100%;" class="flex justify-center">
+                    <div class="flex q-justify-around" style="width: 900px;">
+                      <div v-for="commodity in removedCmdt" :key="commodity" class="flex q-py-xs justify-around"
+                        style="width: 450px;">
+                        <q-card class="my-card">
+                          <div class="q-pa-md">
+                            <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px"
+                              thumbnails infinite>
+                              <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                                :img-src="image" />
+                            </q-carousel>
+                          </div>
+
+                          <q-card-section>
+                            <!-- <q-btn fab color="primary" icon="delete" class="absolute"
+                              style="top: 0; right: 12px; transform: translateY(-50%);"
+                              @click="deleteCommodity(commodity)" /> -->
+
+                            <div class="row no-wrap items-center">
+                              <div class="col text-h6 ellipsis">
+                                <q-btn flat class="text-h6" >
                                   {{ commodity.goodsName }}
                                 </q-btn>
                               </div>
@@ -291,6 +474,13 @@ const shopId = 1;
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
+let leftDrawerOpen = ref(false)
+
+// 左侧边栏内项目icon-text列举
+const links1 = [
+  { icon: 'person', text: '个人账户' },
+  { icon: 'star_border', text: '资金信息' }
+]
 
 const tab = ref("Commodity")
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
@@ -300,7 +490,6 @@ const layout_delete = ref(false)
 let editCommodity = ref(false)
 let viewOnly = ref(true)
 
-const commodities = ref([])
 const instance = getCurrentInstance()
 
 //上架商品
@@ -326,6 +515,12 @@ let editComStatus = ref(null)
 const shops = ref([])
 const code = ref(null)
 
+// 商品展示（分类数组）
+let onShelveCmdt = ref([])
+let removedCmdt = ref([])
+let applyingCmdt = ref([])
+
+
 const shopName = computed(() => {
   return shops.value ? shops.value.shopName : '';
 });
@@ -344,6 +539,12 @@ const shopRegistrationTime = computed(() => {
 
 
 const myForm = ref(null);
+
+// 暂禁用
+// 左侧边栏开闭
+// function toggleLeftDrawer() {
+// leftDrawerOpen.value = !leftDrawerOpen.value
+// }
 
 function checkprice(price) {
   if (isNaN(price)) {
@@ -413,8 +614,8 @@ function update() {
   }).then((response) => {
     const r = response.data['data']
     console.log('showAddRecord_1')
-    commodities.value = r
-    console.log(commodities.value)
+    onShelveCmdt.value = r
+    console.log('获取在售商品：', onShelveCmdt.value)
   });
 
   instance.proxy.$forceUpdate();
@@ -480,58 +681,62 @@ function handleUpload(event) {
 
 onMounted(() => {
   //显示该店铺的信息
-  axiosInstance.get('/shop/showAddRecord_1', {
-    params: {
-      shopId: shopId
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    const [year, month, day] = r.registrationTime;
-    r.registrationTime = `${year}-${month}-${day}`;
-    console.log('shop message')
-    shops.value = r
-    console.log(shops.value)
-  });
+  // axiosInstance.get('/shop/showAddRecord_1', {
+  //   params: {
+  //     shopId: shopId
+  //   }
+  // }).then((response) => {
+  //   const r = response.data['data']
+  //   const [year, month, day] = r.registrationTime;
+  //   r.registrationTime = `${year}-${month}-${day}`;
+  //   console.log('shop message')
+  //   shops.value = r
+  //   console.log(shops.value)
+  // });
 
-  //显示该店铺的所有商品
-  axiosInstance.get('/Goods/showShopAllGoods', {
-    params: {
-      shopId: shopId,
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    console.log('show all comodities of shop ', shopId, ': ', r)
-    r.map(obj => {
-      switch (obj.status) {
-        case 0:
-          obj.status = '上架审核中';
-          break;
-        case 1:
-          obj.status = '上架成功';
-          break;
-        case 2:
-          obj.status = '上架失败';
-          break;
-        case 5:
-          obj.status = '已移除';
-          break;
-        case 7:
-          obj.status = '商品详情更新审核中';
-          break;
-        case 8:
-          obj.status = '商品详情更新成功';
-          break;
-        case 9:
-          obj.status = '商品详情更新失败';
-          break;
-        default:
-          break;
-      }
-      return obj;
-    });
-    commodities.value.splice(0, commodities.value.length, ...r);
-    console.log(commodities.value)
-  });
+  getShelvedCommodities()
+  getApplication()
+  getRemovedCommodities()
+
+  // 显示该店铺的所有商品
+  // axiosInstance.get('/Goods/showShopAllGoods', {
+  //   params: {
+  //     shopId: shopId,
+  //   }
+  // }).then((response) => {
+  //   const r = response.data['data']
+  //   console.log('show all comodities of shop ', shopId, ': ', r)
+  //   r.map(obj => {
+  //     switch (obj.status) {
+  //       case 0:
+  //         obj.status = '上架审核中';
+  //         break;
+  //       case 1:
+  //         obj.status = '上架成功';
+  //         break;
+  //       case 2:
+  //         obj.status = '上架失败';
+  //         break;
+  //       case 5:
+  //         obj.status = '已移除';
+  //         break;
+  //       case 7:
+  //         obj.status = '商品详情更新审核中';
+  //         break;
+  //       case 8:
+  //         obj.status = '商品详情更新成功';
+  //         break;
+  //       case 9:
+  //         obj.status = '商品详情更新失败';
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //     return obj;
+  //   });
+  //   commodities.value.splice(0, commodities.value.length, ...r);
+  //   console.log(commodities.value)
+  // });
 
 });
 
@@ -560,7 +765,7 @@ function postCommodityEdit() {
     "\ngoods shop id: ", editComShopid.value,
     "\ngoods image: ", editComImage.value,)
 
-    axiosInstance
+  axiosInstance
     .post('/Goods/updateGoodsApply',
       {
         goodsName: editComName.value,
@@ -594,6 +799,144 @@ function postCommodityEdit() {
       // myForm.value.resetValidation();
     });
 }
+
+// 获取改店铺的所有已上架商品
+function getShelvedCommodities() {
+  axiosInstance.get('/Goods/showAddRecord_1', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.status = '在售中'
+    });
+    onShelveCmdt.value = r
+    console.log('获取在售商品(record 1)：', onShelveCmdt.value)
+  });
+  // 修改商品信息成功的案例也算做上架中的商品
+  axiosInstance.get('/Goods/showUpdateRecord_8', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '在售中'
+        onShelveCmdt.value.push(item)
+      }
+    });
+    console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+  });
+}
+
+// 获取改店铺的所有申请中的商品
+function getApplication() {
+  // 上架等待审批
+  axiosInstance.get('/Goods/showAddRecord_0', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '上架申请审批中'
+        applyingCmdt.value.push(item)
+      }
+    });
+    console.log('获取申请商品(record 0)：', applyingCmdt.value)
+  });
+  // 上架失败
+  axiosInstance.get('/Goods/showAddRecord_2', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '上架申请失败'
+        applyingCmdt.value.push(item)
+      }
+    });
+    // if (r !== []){
+    //     applyingCmdt.value.push(r)
+    //   }
+    console.log('获取申请商品(record 2)：', applyingCmdt.value)
+  });
+  // 修改信息审批中
+  axiosInstance.get('/Goods/showUpdateRecord_7', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '修改信息申请审批中'
+        applyingCmdt.value.push(item)
+      }
+    });
+    // if (r !== []){
+    //     applyingCmdt.value.push(r)
+    //   }
+    console.log('获取申请商品(record 7)：', applyingCmdt.value)
+  });
+  // 修改信息失败
+  axiosInstance.get('/Goods/showUpdateRecord_9', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '修改信息申请失败'
+        applyingCmdt.value.push(item)
+      }
+    });
+    // if (r !== []){
+    //     applyingCmdt.value.push(r)
+    //   }
+    console.log('获取申请商品(record 9)：', applyingCmdt.value)
+  });
+}
+
+// 获取所有已下架商品
+function getRemovedCommodities() {
+  axiosInstance.get('/Goods/showDeleteRecord_5', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    // console.log('showDeleteRecord_5')
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '已下架'
+        removedCmdt.value.push(item)
+      }
+    });
+    console.log('获取下架商品(record 5)：', removedCmdt.value)
+  });
+}
+
 </script>
 
 <style lang="sass" scoped>

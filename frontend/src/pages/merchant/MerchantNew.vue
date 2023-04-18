@@ -19,7 +19,7 @@
       <router-view />
       <div class="q-pa-md row items-start q-gutter-md">
         <!--商户信息展示-->
-        <q-card class="my-card" flat bordered style="width: 280px">
+        <q-card class="my-card" flat bordered style="width: 20%; margin-top: 3%;">
           <q-card-section horizontal>
             <q-card-section class="q-pt-xs">
               <div class="text-overline">Overline</div>
@@ -47,7 +47,7 @@
         </q-card>
 
         <!--商户商品展示-->
-        <div class="q-pa-md" style="max-width: 1200px">
+        <div class="q-pa-md" style="max-width: 75%; ">
           <q-card class="my-card">
             <q-tab-panels v-model="tab" animated>
               <q-tab-panel name="mails" class="q-pa-none">
@@ -57,8 +57,9 @@
                   <template v-slot:before>
                     <q-tabs v-model="innerTab" vertical active-color="accent" class="text-grey">
                       <q-tab name="allShops" icon="toll" label="All" />
-                      <q-tab name="innerAlarms" icon="alarm" label="Alarms" />
-                      <q-tab name="innerMovies" icon="movie" label="Movies" />
+                      <q-tab name="openingShops" icon="alarm" label="Opening" />
+                      <q-tab name="applyingShops" icon="open_in_new" label="Applying" />
+                      <q-tab name="closedShops" icon="movie" label="Closed" />
                     </q-tabs>
                   </template>
 
@@ -67,7 +68,7 @@
 
                       <q-tab-panel name="allShops">
                         <div class="q-py-xs justify-around" style="height: 1000px; width: 950px;">
-                          <div v-for="shop in shops" :key="shop">
+                          <div v-for="shop in allShops" :key="shop">
 
                             <div class="q-pa-md row items-start q-gutter-md" style="width: 80%;">
                               <q-card class=" my-card" flat bordered style="width: 80%;">
@@ -76,7 +77,7 @@
                                   <div class="text-overline text-orange-9">Overline</div>
                                   <q-btn flat class="text-h6" @click="toShop(shop.id)">
                                     {{ shop.shopName }}
-                                  </q-btn>x
+                                  </q-btn>
                                   <div class="row no-wrap items-center">
                                     <q-rating size="18px" v-model="stars" :max="5" color="primary" />
                                   </div>
@@ -123,27 +124,178 @@
                         </div>
                       </q-tab-panel>
 
-                      <q-tab-panel name="innerAlarms">
-                        <div class="text-h4 q-mb-md">Alarms</div>
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio
-                          iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa
-                          fuga nulla ullam. In, libero.</p>
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio
-                          iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa
-                          fuga nulla ullam. In, libero.</p>
+                      <q-tab-panel name="openingShops">
+                        <div class="q-py-xs justify-around" style="height: 1000px; width: 950px;">
+                          <div v-for="shop in openingShops" :key="shop">
+
+                            <div class="q-pa-md row items-start q-gutter-md" style="width: 80%;">
+                              <q-card class=" my-card" flat bordered style="width: 80%;">
+                                <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" /> -->
+                                <q-card-section>
+                                  <div class="text-overline text-orange-9">Overline</div>
+                                  <q-btn flat class="text-h6" @click="toShop(shop.id)">
+                                    {{ shop.shopName }}
+                                  </q-btn>
+                                  <div class="row no-wrap items-center">
+                                    <q-rating size="18px" v-model="stars" :max="5" color="primary" />
+                                  </div>
+                                  <q-separator />
+                                  <br>
+                                  <div class="text-caption text-grey">
+                                    商品类别:
+                                    <span flat v-for="c in shop.category" :key="c">
+                                      {{ c }} &nbsp;
+                                    </span>
+                                    <br>
+                                    商店简介: {{ shop.introduce }}
+                                  </div>
+
+                                  <div class="text-caption text-grey">
+                                    商品类别:
+                                    <span flat v-for="c in shop.category" :key="c">
+                                      {{ c }} &nbsp;
+                                    </span>
+                                    <br>
+                                    商店状态: {{ shop.status }}
+                                  </div>
+                                </q-card-section>
+
+                                <q-card-actions>
+                                  <q-btn icon="delete" @click="deleteShop(shop)" />
+                                  <q-btn color="grey" round flat dense
+                                    :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                                    @click="expanded = !expanded" />
+                                </q-card-actions>
+
+                                <q-slide-transition>
+                                  <div v-show="expanded">
+                                    <q-separator />
+                                    <q-card-section class="text-subitle2">
+                                      {{ shop.introduce }}
+                                    </q-card-section>
+                                  </div>
+                                </q-slide-transition>
+
+                              </q-card>
+                            </div>
+                          </div>
+                        </div>
                       </q-tab-panel>
 
-                      <q-tab-panel name="innerMovies">
-                        <div class="text-h4 q-mb-md">Movies</div>
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio
-                          iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa
-                          fuga nulla ullam. In, libero.</p>
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio
-                          iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa
-                          fuga nulla ullam. In, libero.</p>
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio
-                          iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa
-                          fuga nulla ullam. In, libero.</p>
+                      <q-tab-panel name="applyingShops">
+                        <div class="q-py-xs justify-around" style="height: 1000px; width: 950px;">
+                          <div v-for="shop in applyingShops" :key="shop">
+
+                            <div class="q-pa-md row items-start q-gutter-md" style="width: 80%;">
+                              <q-card class=" my-card" flat bordered style="width: 80%;">
+                                <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" /> -->
+                                <q-card-section>
+                                  <div class="text-overline text-orange-9">Overline</div>
+                                  <q-btn flat class="text-h6" @click="toShop(shop.id)">
+                                    {{ shop.shopName }}
+                                  </q-btn>
+                                  <div class="row no-wrap items-center">
+                                    <q-rating size="18px" v-model="stars" :max="5" color="primary" />
+                                  </div>
+                                  <q-separator />
+                                  <br>
+                                  <div class="text-caption text-grey">
+                                    商品类别:
+                                    <span flat v-for="c in shop.category" :key="c">
+                                      {{ c }} &nbsp;
+                                    </span>
+                                    <br>
+                                    商店简介: {{ shop.introduce }}
+                                  </div>
+
+                                  <div class="text-caption text-grey">
+                                    商品类别:
+                                    <span flat v-for="c in shop.category" :key="c">
+                                      {{ c }} &nbsp;
+                                    </span>
+                                    <br>
+                                    商店状态: {{ shop.status }}
+                                  </div>
+                                </q-card-section>
+
+                                <q-card-actions>
+                                  <q-btn icon="delete" @click="deleteShop(shop)" />
+                                  <q-btn color="grey" round flat dense
+                                    :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                                    @click="expanded = !expanded" />
+                                </q-card-actions>
+
+                                <q-slide-transition>
+                                  <div v-show="expanded">
+                                    <q-separator />
+                                    <q-card-section class="text-subitle2">
+                                      {{ shop.introduce }}
+                                    </q-card-section>
+                                  </div>
+                                </q-slide-transition>
+
+                              </q-card>
+                            </div>
+                          </div>
+                        </div>
+                      </q-tab-panel>
+
+                      <q-tab-panel name="closedShops">
+                        <div class="q-py-xs justify-around" style="height: 1000px; width: 950px;">
+                          <div v-for="shop in closedShops" :key="shop">
+
+                            <div class="q-pa-md row items-start q-gutter-md" style="width: 80%;">
+                              <q-card class=" my-card" flat bordered style="width: 80%;">
+                                <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" /> -->
+                                <q-card-section>
+                                  <div class="text-overline text-orange-9">Overline</div>
+                                  <q-btn flat class="text-h6" @click="toShop(shop.id)">
+                                    {{ shop.shopName }}
+                                  </q-btn>
+                                  <div class="row no-wrap items-center">
+                                    <q-rating size="18px" v-model="stars" :max="5" color="primary" />
+                                  </div>
+                                  <q-separator />
+                                  <br>
+                                  <div class="text-caption text-grey">
+                                    商品类别:
+                                    <span flat v-for="c in shop.category" :key="c">
+                                      {{ c }} &nbsp;
+                                    </span>
+                                    <br>
+                                    商店简介: {{ shop.introduce }}
+                                  </div>
+
+                                  <div class="text-caption text-grey">
+                                    商品类别:
+                                    <span flat v-for="c in shop.category" :key="c">
+                                      {{ c }} &nbsp;
+                                    </span>
+                                    <br>
+                                    商店状态: {{ shop.status }}
+                                  </div>
+                                </q-card-section>
+
+                                <q-card-actions>
+                                  <q-btn icon="delete" @click="deleteShop(shop)" />
+                                  <q-btn color="grey" round flat dense
+                                    :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                                    @click="expanded = !expanded" />
+                                </q-card-actions>
+
+                                <q-slide-transition>
+                                  <div v-show="expanded">
+                                    <q-separator />
+                                    <q-card-section class="text-subitle2">
+                                      {{ shop.introduce }}
+                                    </q-card-section>
+                                  </div>
+                                </q-slide-transition>
+
+                              </q-card>
+                            </div>
+                          </div>
+                        </div>
                       </q-tab-panel>
                     </q-tab-panels>
                   </template>
@@ -151,7 +303,7 @@
                 </q-splitter>
               </q-tab-panel>
 
-              <q-tab-panel name="alarms">
+              <!-- <q-tab-panel name="alarms">
                 <div class="text-h6">Alarms</div>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
               </q-tab-panel>
@@ -159,7 +311,7 @@
               <q-tab-panel name="movies">
                 <div class="text-h6">Movies</div>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </q-tab-panel>
+              </q-tab-panel> -->
             </q-tab-panels>
           </q-card>
         </div>
@@ -305,7 +457,11 @@ const stars = ref(4)
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
-const shops = ref([])
+const allShops = ref([])
+const openingShops = ref([])
+const applyingShops = ref([])
+const closedShops = ref([])
+
 
 
 const commodities = ref([
@@ -548,29 +704,35 @@ onMounted(() => {
         switch (obj.status) {
           case 0:
             obj.status = '开店未审核';
+            applyingShops.value.push(obj)
             break;
           case 1:
             obj.status = '开店已通过';
+            openingShops.value.push(obj)
             break;
           case 2:
             obj.status = '开店未通过';
+            applyingShops.value.push(obj)
             break;
           case 3:
             obj.status = '闭店未审核';
+            applyingShops.value.push(obj)
             break;
           case 4:
             obj.status = '闭店已通过';
+            closedShops.value.push(obj)
             break;
           case 5:
             obj.status = '闭店未通过';
+            openingShops.value.push(obj)
             break;
           default:
             break;
         }
         return obj;
       });
-      shops.value.splice(0, shops.value.length, ...r);
-      console.log(shops.value);
+      allShops.value.splice(0, allShops.value.length, ...r);
+      console.log(allShops.value);
     });
 });
 

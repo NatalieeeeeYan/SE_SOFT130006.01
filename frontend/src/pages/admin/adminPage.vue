@@ -178,6 +178,7 @@
             style="margin-top: 2%; margin-left: 1%;" />
           <q-separator style="width: 100%; margin-top: 3%;" />
 
+          <p style="font-size: large; margin-top: 2%; margin-left: 2%;">已同意的商品申请</p>
           <!-- 已通过的上架申请 -->
           <div v-for="commodity in aCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
             style="width: 350px; max-width: 100%;">
@@ -249,7 +250,8 @@
 
           <q-separator style="width: 100%; margin-top: 3%;" />
 
-          <!-- 已通过的上架申请 -->
+          <p style="font-size: large; margin-top: 2%; margin-left: 2%;">已拒绝的商品申请</p>
+          <!-- 已拒绝的上架申请 -->
           <div v-for="commodity in rCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
             style="width: 350px; max-width: 100%;">
             <q-card class="edit-commodity-card" style="width: 100%;">
@@ -280,7 +282,7 @@
             </q-card>
             <q-separator />
           </div>
-          <!-- 已通过的修改信息申请 -->
+          <!-- 已拒绝的修改信息申请 -->
           <div v-for="commodity in rCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
             style="width: 350px; max-width: 100%;">
             <q-card class="edit-commodity-card" style="width: 100%;">
@@ -660,78 +662,77 @@ onMounted(() => {
   // 请求所有待审批上架的商品信息
   axiosInstance.get('/Goods/showAddApply').then((response) => {
     const r = response.data['data']
-    // r.forEach(function (item) {
-    //   // console.log(item.id)
-    //   // item.id is shopId!
-    //   item.shopName = getShopName(r.shopId)
-    // });
     console.log('get 待审批上架商品 msg: ', r);
-    rcCommodityUpApp.value.splice(0, rcCommodityUpApp.value.length, ...r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rcCommodityEditApp.value.push(item)
+      }
+    });
     console.log("申请待审批上架商品后：", rcCommodityUpApp.value)
   });
 
   // 请求所有待审批修改信息的商品信息
   axiosInstance.get('/Goods/showUpdateApply').then((response) => {
     const r = response.data['data']
-    // r.forEach(function (item) {
-    //   // console.log(item.id)
-    //   // item.id is shopId!
-    //   item.shopName = getShopName(r.shopId)
-    // });
     console.log('get 待审批修改商品 msg: ', r);
-    rcCommodityEditApp.value.splice(0, rcCommodityEditApp.value.length, ...r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rcCommodityEditApp.value.push(item)
+      }
+    });
+    // rcCommodityEditApp.value.push(0, rcCommodityEditApp.value.length, ...r);
     console.log("申请待审批修改商品后：", rcCommodityEditApp.value)
   });
 
-    // 请求所有已通过上架的商品信息
-    axiosInstance.get('/Goods/showAddApproved').then((response) => {
+  // 请求所有已通过上架的商品信息
+  axiosInstance.get('/Goods/showAddApproved').then((response) => {
     const r = response.data['data']
-    // r.forEach(function (item) {
-    //   // console.log(item.id)
-    //   // item.id is shopId!
-    //   item.shopName = getShopName(r.shopId)
-    // });
     console.log('get 已通过上架商品 msg: ', r);
-    aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        aCommodityUpApp.value.push(item)
+      }
+    });
+    // aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
     console.log("已通过上架商品后：", aCommodityUpApp.value)
   });
 
   // 请求所有已通过修改信息的商品信息
   axiosInstance.get('/Goods/showUpdateApproved').then((response) => {
     const r = response.data['data']
-    // r.forEach(function (item) {
-    //   // console.log(item.id)
-    //   // item.id is shopId!
-    //   item.shopName = getShopName(r.shopId)
-    // });
     console.log('get 已通过修改商品 msg: ', r);
-    aCommodityEditApp.value.splice(0, aCommodityEditApp.value.length, ...r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        aCommodityUpApp.value.push(item)
+      }
+    });
+    // aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
     console.log("申请已通过修改商品后：", aCommodityEditApp.value)
   });
 
-    // 请求所有已驳回上架的商品信息
-    axiosInstance.get('/Goods/showAddRejected').then((response) => {
+  // 请求所有已驳回上架的商品信息
+  axiosInstance.get('/Goods/showAddRejected').then((response) => {
     const r = response.data['data']
-    // r.forEach(function (item) {
-    //   // console.log(item.id)
-    //   // item.id is shopId!
-    //   item.shopName = getShopName(r.shopId)
-    // });
     console.log('get 已驳回上架商品 msg: ', r);
-    rCommodityUpApp.value.splice(0, rCommodityUpApp.value.length, ...r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rCommodityUpApp.value.push(item)
+      }
+    });
+    // rCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
     console.log("已驳回上架商品后：", rCommodityUpApp.value)
   });
 
   // 请求所有已驳回修改信息的商品信息
   axiosInstance.get('/Goods/showUpdateRejected').then((response) => {
     const r = response.data['data']
-    // r.forEach(function (item) {
-    //   // console.log(item.id)
-    //   // item.id is shopId!
-    //   item.shopName = getShopName(r.shopId)
-    // });
     console.log('get 已驳回修改商品 msg: ', r);
-    rCommodityEditApp.value.splice(0, rCommodityEditApp.value.length, ...r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rCommodityUpApp.value.push(item)
+      }
+    });
+    // rCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
     console.log("申请已驳回修改商品后：", rCommodityEditApp.value)
   });
 
@@ -884,9 +885,10 @@ function disapproveApplication(rcShopAppRow) {
 function approveCommodityUpdate(goodId) {
   console.log('同意商品上架传参：', goodId)
   axiosInstance.put('/Goods/addGoodsApprove', {
-    goodsId: goodId, 
-  }, {params: { 
-      goodsId: goodId, 
+    goodsId: goodId,
+  }, {
+    params: {
+      goodsId: goodId,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -897,9 +899,10 @@ function approveCommodityUpdate(goodId) {
 function disapproveCommodityUpdate(good) {
   console.log('不同意商品上架传参：', good, '\nid: ', good.id)
   axiosInstance.put('/Goods/addGoodsApprove', {
-    goodsId: goodId, 
-  }, {params: { 
-      goodsId: goodId, 
+    goodsId: goodId,
+  }, {
+    params: {
+      goodsId: goodId,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -910,9 +913,10 @@ function disapproveCommodityUpdate(good) {
 function approveCommodityEdit(goodId) {
   console.log('同意商品修改传参：', goodId)
   axiosInstance.put('/Goods/updateGoodsApprove', {
-    goodsId: goodId, 
-  }, {params: { 
-      goodsId: goodId, 
+    goodsId: goodId,
+  }, {
+    params: {
+      goodsId: goodId,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -923,9 +927,10 @@ function approveCommodityEdit(goodId) {
 function disapproveCommodityEdit(goodId) {
   console.log('不同意商品修改传参：', goodId)
   axiosInstance.put('/Goods/updateGoodsReject', {
-    goodsId: goodId, 
-  }, {params: { 
-      goodsId: goodId, 
+    goodsId: goodId,
+  }, {
+    params: {
+      goodsId: goodId,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -996,5 +1001,4 @@ function getSelectedString() {
 .router-link-class {
   color: inherit;
   text-decoration: none;
-}
-</style>
+}</style>
