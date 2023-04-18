@@ -124,7 +124,7 @@
             <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
               narrow-indicator>
               <q-tab name="onShelve" label="在售商品" />
-              <q-tab name="applications" label="商品修改申请" />
+              <q-tab name="applications" label="待审批&失败的申请记录" />
               <q-tab name="removals" label="已下架商品" />
 
             </q-tabs>
@@ -827,7 +827,7 @@ function getShelvedCommodities() {
       // console.log(item.id)
       // item.id is shopId!
       if (item !== null) {
-        item.status = '在售中'
+        item.status = '在售中（修改信息成功）'
         onShelveCmdt.value.push(item)
       }
     });
