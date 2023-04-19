@@ -717,52 +717,147 @@ onMounted(() => {
   //   shops.value = r
   //   console.log(shops.value)
   // });
+  console.log('current shop id: ', shopId)
 
-  getShelvedCommodities()
-  getApplication()
-  getRemovedCommodities()
+  // 获取所有上架商品的信息
+  axiosInstance.get('/Goods/showAddRecord_1', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      item.status = '在售中'
+    });
+    onShelveCmdt.value = r
+    console.log('获取在售商品(record 1)：', onShelveCmdt.value)
+  });
+  // 修改商品信息失败的案例也算做上架中的商品
+  axiosInstance.get('/Goods/showUpdateRecord_9', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      if (item !== null) {
+        item.status = '在售中（修改信息失败）'
+        onShelveCmdt.value.push(item)
+      }
+    });
+    console.log('获取在售商品(record 9)：', onShelveCmdt.value)
+  });
+  // 修改信息成功的案例也算上架商品
+  axiosInstance.get('/Goods/showUpdateRecord_8', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      if (item !== null) {
+        item.status = '在售中（修改信息成功）'
+        onShelveCmdt.value.push(item)
+      }
+    });
+    console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+  });
 
-  // 显示该店铺的所有商品
-  // axiosInstance.get('/Goods/showShopAllGoods', {
-  //   params: {
-  //     shopId: shopId,
-  //   }
-  // }).then((response) => {
-  //   const r = response.data['data']
-  //   console.log('show all comodities of shop ', shopId, ': ', r)
-  //   r.map(obj => {
-  //     switch (obj.status) {
-  //       case 0:
-  //         obj.status = '上架审核中';
-  //         break;
-  //       case 1:
-  //         obj.status = '上架成功';
-  //         break;
-  //       case 2:
-  //         obj.status = '上架失败';
-  //         break;
-  //       case 5:
-  //         obj.status = '已移除';
-  //         break;
-  //       case 7:
-  //         obj.status = '商品详情更新审核中';
-  //         break;
-  //       case 8:
-  //         obj.status = '商品详情更新成功';
-  //         break;
-  //       case 9:
-  //         obj.status = '商品详情更新失败';
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //     return obj;
-  //   });
-  //   commodities.value.splice(0, commodities.value.length, ...r);
-  //   console.log(commodities.value)
-  // });
+  // 所有申请中的商品
+  // 上架等待审批
+  axiosInstance.get('/Goods/showAddRecord_0', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '上架申请审批中'
+        applyingCmdt.value.push(item)
+      }
+    });
+    console.log('获取申请商品(record 0)：', applyingCmdt.value)
+  });
+  // 上架失败
+  axiosInstance.get('/Goods/showAddRecord_2', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      if (item !== null) {
+        item.status = '上架申请失败'
+        applyingCmdt.value.push(item)
+      }
+    });
+    console.log('获取申请商品(record 2)：', applyingCmdt.value)
+  });
+  // 修改信息审批中
+  axiosInstance.get('/Goods/showUpdateRecord_7', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      if (item !== null) {
+        item.status = '修改信息申请审批中'
+        applyingCmdt.value.push(item)
+      }
+    });
+    console.log('获取申请商品(record 7)：', applyingCmdt.value)
+  });
+  // 修改信息失败
+  axiosInstance.get('/Goods/showUpdateRecord_9', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      if (item !== null) {
+        item.status = '修改信息申请失败'
+        applyingCmdt.value.push(item)
+      }
+    });
+    console.log('获取申请商品(record 9)：', applyingCmdt.value)
+  });
+  
+  // 下架的商品
+  axiosInstance.get('/Goods/showDeleteRecord_5', {
+    params: {
+      shopId: 1
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      if (item !== null) {
+        item.status = '已下架'
+        removedCmdt.value.push(item)
+      }
+    });
+    console.log('获取下架商品(record 5)：', removedCmdt.value)
+  });
 
-  getTransition()
+  // 获取流水
+  // console.log('current shopid: ', shopId)
+  let id = ref(1)
+  console.log('id: ', id.value)
+  axiosInstance.post('/transferRecords/shop', {
+    params: {
+      id: 1, 
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get shop transfer records: ', r);
+    r.forEach(function (item) {
+      transitionRows.value.push(item); 
+    });
+  });
 });
 
 function toEditCommodity(commodity) {

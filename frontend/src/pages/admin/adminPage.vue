@@ -39,7 +39,7 @@
           <q-item-section> Dark theme </q-item-section>
         </q-item>
         <router-link to="/admin" class="router-link-class">
-          <q-item clickable target="_blank" rel="noopener">
+          <q-item clickable target="_blank" rel="noopener" @click="showAdminMainPage">
             <q-item-section avatar>
               <q-icon name="perm_identity" />
             </q-item-section>
@@ -70,7 +70,7 @@
     </q-drawer>
 
     <q-page-container>
-      <div class="q-pa-md" v-if="showAllApplycation">
+      <div class="q-pa-md" v-if="showAllApplication">
 
         <div class="applicationTypeSelect" style="width: 100%">
           <q-btn flat rounded color="secondary" label="待查看" @click="selectRemainChecked"
@@ -317,7 +317,7 @@
       </div>
 
       <!-- 商城中间账户展示 -->
-      <div class="transitionAccount" v-if="showTransition && !showAllApplycation && !showProfit">
+      <div class="transitionAccount" v-if="showTransition && !showAllApplication && !showProfit">
         <q-card class="my-card" flat bordered style="max-width: 100%; width: 70%; margin-left: 5%; margin-top: 3%;">
 
           <q-card-section>
@@ -352,7 +352,7 @@
       </div>
 
       <!-- 商城利润账户展示 -->
-      <div class="profitAccount" v-if="showProfit && !showTransitio && !showAllApplycation">
+      <div class="profitAccount" v-if="showProfit && !showTransitio && !showAllApplication">
         <q-card class="my-card" flat bordered style="max-width: 100%; width: 70%; margin-left: 5%; margin-top: 3%;">
 
           <q-card-section>
@@ -402,7 +402,7 @@ const axiosInstance = axios.create({
 
 let leftDrawerOpen = ref(false)
 let showTransition = ref(false)
-let showAllApplycation = ref(true)
+let showAllApplication = ref(true)
 let showProfit = ref(false)
 let showApprovedApps = ref(false)
 let showRejectedApps = ref(false)
@@ -762,16 +762,22 @@ onMounted(() => {
   getTransfer()
 })
 
+function showAdminMainPage() {
+  showTransition.value = false
+  showAllApplication.value = true
+  showProfit.value = false
+}
+
 function showTransitionMode() {
   showTransition.value = true
-  showAllApplycation.value = false
+  showAllApplication.value = false
   showProfit.value = false
 }
 
 function showProfitMode() {
   showProfit.value = true
-  showAllApplycation.value = false
-  showAllApplycation.value = false
+  showAllApplication.value = false
+  showAllApplication.value = false
 }
 
 function selectRemainChecked() {
