@@ -19,7 +19,7 @@
       <router-view />
       <div class="q-pa-md row items-start q-gutter-md">
         <!--商店基本信息-->
-        <div class="q-pa-ma" style="width:400px;">
+        <div class="q-pa-ma" style="width: 30%">
           <div style="width:300px;">
             <q-img :src="url" style="border: 50%; left:50px" />
             <div class="text-h5 q-mt-sm q-mb-xs" style="margin-left:100px;height:50px"> {{ shopName }}</div>
@@ -44,7 +44,7 @@
         </div>
 
         <!--商店商品展示-->
-        <div class="q-pa-ma">
+        <div class="q-pa-ma" style="width: 65%;">
           <div>
             <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
               narrow-indicator>
@@ -57,9 +57,9 @@
               <q-tab-panel name="Commodity">
                 <div class="flex justify-center">
                   <q-scroll-area :visible="visible" style="height: 620px; width: 900px;" class="flex justify-center">
-                    <div class="flex q-justify-around" style="width: 900px;">
+                    <div class="flex q-justify-around" style="width: 100%;">
                       <div v-for="commodity in commodities" :key="commodity" class="flex q-py-xs justify-around"
-                        style="width: 450px;">
+                        style="width: 400px;">
                         <q-card class="my-card">
                           <div class="q-pa-md">
                             <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px"
@@ -83,7 +83,7 @@
                               </div>
                             </div>
 
-                            <q-rating v-model="stars" :max="5" size="32px" />
+                            <q-rating v-model="commodity.stars" :max="5" size="32px" />
                           </q-card-section>
 
                           <q-card-section class="q-pt-none">
@@ -169,10 +169,11 @@ function toggleLabel() {
 function addShoppingCart(id) {
   console.log(id)
   console.log("add shopping cart")
+  console.log(store.state.userId)
   //记得改成全局变量
-  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=1`).then((res) => {
+  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=${store.state.userId}`).then((res) => {
       console.log("cart")
-      console.log(res.data.data)
+      console.log(res.data)
     });
 }
 
@@ -180,7 +181,7 @@ onMounted(() => {
   //显示该店铺的信息
   axiosInstance.get('/shop/showShopByShopId', {
     params: {
-      shopId: 1
+      shopId: shopId
     }
   }).then((response) => {
     const r = response.data['data']
@@ -194,7 +195,7 @@ onMounted(() => {
   //显示该店铺的所有上架成功的商品
   axiosInstance.get('/Goods/showAddRecord_1', {
     params: {
-      shopId: 1
+      shopId: shopId
     }
   }).then((response) => {
     const r = response.data['data']

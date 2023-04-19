@@ -50,7 +50,7 @@ public class TransferRecordsController {
 
     @PostMapping("/shop")
     @ApiOperation("获取商店流水")
-    public Result<?> getShop(@RequestParam int id){
+    public Result<?> getShop(@RequestParam Integer id){
         String name = "shop_" + id;
         List<TransferRecords> recordsList = transferRecordsMapper.get(name);
         for (TransferRecords record : recordsList) {

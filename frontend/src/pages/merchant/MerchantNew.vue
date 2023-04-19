@@ -11,6 +11,7 @@
           </q-avatar>
           商户首页
         </q-toolbar-title>
+        <q-btn flat round dense icon="update" class="q-mr-xs" @click="update"></q-btn>
 
       </q-toolbar>
     </q-header>
@@ -352,7 +353,7 @@
 
               <q-page-container>
                 <q-page padding>
-                  <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+                  <q-form ref="myForm" @submit="onSubmit" @reset="onReset" class="q-gutter-md">
                     <br>
                     <q-input filled v-model="shopName" label="商店名称 *" hint="Name and surname" lazy-rules
                       :rules="[val => val && val.length > 0 && val.length < 13 || '请输入您的商店名称']" />
@@ -378,7 +379,7 @@
                     <q-input filled v-model="idNumber" label="身份证号 *" hint="Your ID card number" lazy-rules :rules="[
                       val => val && val.length > 0 || '请输入您的身份证号',
                       val => val.length === 18 && checkIdNumber(idNumber) || '请输入正确的身份证号',
-                      val => code != 20001 || '该身份证已经被申请']" @click="code = 0">{{ code }}</q-input>
+                      val => code != 20006 || '该身份证已经被申请']" @click="code = 0">{{ code }}</q-input>
 
                     <q-input filled v-model="introduce" label="商店简介 *" hint="Introduce your store within 128 characters"
                       lazy-rules :rules="[val => val && val.length > 0 || '请输入您的简介',
@@ -389,7 +390,7 @@
                     val => val.length < 33 || '超过字数限制']"></q-input>
 
                     <q-input filled v-model="fund" label="注册资⾦ *" hint="registered funds" lazy-rules :rules="[val => val && val.length > 0 || '请输入您的备案地址',
-                    checkFunds || '资金不足1000']"></q-input>
+                    checkFunds || '资金不足1000', val => code != 20010 || '账户资金不足']"></q-input>
 
                     <q-input filled v-model="registrationTime" :rules="[]">
                       <template v-slot:append>
@@ -462,99 +463,11 @@ const openingShops = ref([])
 const applyingShops = ref([])
 const closedShops = ref([])
 
-
-
-const commodities = ref([
-  {
-    goodsName: 'Commodity1',
-    description: 'Commodity1的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 1,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity2',
-    description: 'Commodity2的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 2,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity1',
-    description: 'Commodity1的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 1,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity2',
-    description: 'Commodity2的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 2,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity1',
-    description: 'Commodity1的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 1,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity2',
-    description: 'Commodity2的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 2,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity1',
-    description: 'Commodity1的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 1,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity2',
-    description: 'Commodity2的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 2,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity1',
-    description: 'Commodity1的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 1,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity2',
-    description: 'Commodity2的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 2,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity1',
-    description: 'Commodity1的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 1,
-    slide: ref(1)
-  },
-  {
-    goodsName: 'Commodity2',
-    description: 'Commodity2的商品描述  Small plates, salads & sandwiches in an intimate setting.',
-    price: 100,
-    id: 2,
-    slide: ref(1)
-  }
-])
-
 //跳转到单个店铺
 function toShop(id) {
   console.log(id)
   store.commit('setShopId', id);
+  console.log("shopId")
   console.log(store.state.shopId);
   router.push('/merchantshop');
 }
@@ -566,6 +479,53 @@ function add_category() {
     new_category.value = '';
     console.log(categories.value);
   }
+}
+
+function update() {
+  console.log("update")
+  axiosInstance.post('/shop/showUser', { id: store.state.userId })
+    .then((response) => {
+      const r = response.data['data'];
+      console.log('Show shop message: ', r);
+      r.map((obj) => {
+        const [year, month, day] = obj.registrationTime;
+        obj.registrationTime = `${year}-${month}-${day}`;
+        return obj;
+      });
+      r.map((obj) => {
+        switch (obj.status) {
+          case 0:
+            obj.status = '开店未审核';
+            applyingShops.value.push(obj)
+            break;
+          case 1:
+            obj.status = '开店已通过';
+            openingShops.value.push(obj)
+            break;
+          case 2:
+            obj.status = '开店未通过';
+            applyingShops.value.push(obj)
+            break;
+          case 3:
+            obj.status = '闭店未审核';
+            applyingShops.value.push(obj)
+            break;
+          case 4:
+            obj.status = '闭店已通过';
+            closedShops.value.push(obj)
+            break;
+          case 5:
+            obj.status = '闭店未通过';
+            openingShops.value.push(obj)
+            break;
+          default:
+            break;
+        }
+        return obj;
+      });
+      allShops.value.splice(0, allShops.value.length, ...r);
+      console.log(allShops.value);
+    });
 }
 
 // 删除商品种类
@@ -739,9 +699,9 @@ onMounted(() => {
 function deleteShop(shop) {
   console.log("delete shop parameters: ", shop)
   axiosInstance.post('/shop/delete', {
-      id: shop.id, 
-      userId: shop.userId, 
-      fund: shop.fund, 
+      id: shop.id,
+      userId: shop.userId,
+      fund: shop.fund,
     }).then((response) => {
       code.value = response.data['code'];
       console.log('code');
