@@ -22,4 +22,8 @@
         SELECT * FROM ss_goods
         WHERE shop_id = #{shopId} AND status = #{status}
     </select>
+    <select id="getById" resultType="com.team.ShopSystem.sys.entity.Goods">
+        SELECT * FROM ss_goods
+        WHERE id = #{id}
+    </select>
 </mapper>

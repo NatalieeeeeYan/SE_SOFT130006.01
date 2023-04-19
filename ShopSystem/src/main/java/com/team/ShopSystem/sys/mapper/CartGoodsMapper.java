@@ -2,7 +2,6 @@ package com.team.ShopSystem.sys.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.team.ShopSystem.sys.entity.CartGoods;
-import com.team.ShopSystem.sys.entity.Goods;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ public interface CartGoodsMapper extends BaseMapper<CartGoods> {
 
     void updateQuantity(Integer cartId, Integer goodsId,Integer variate);
 
-    List<Goods> getByCartId(Integer cartId);
+    List<CartGoods> getByCartId(Integer cartId);
 
     Integer queryByGoodsId(Integer goodsId);
 

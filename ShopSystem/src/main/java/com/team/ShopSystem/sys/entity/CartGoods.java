@@ -20,13 +20,13 @@ public class CartGoods {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private Integer cartId;
+    protected Integer cartId;
 
-    private Integer goodsId;
+    protected Integer goodsId;
 
-    private Integer goodsQuantity;
+    protected Integer goodsQuantity;
 
-    private Boolean isRemoved;
+    protected Boolean isRemoved;
 
     public CartGoods(Integer cartId, Integer goodsId) {
         this.cartId=cartId;

@@ -1,18 +1,24 @@
 package com.team.ShopSystem.sys.controller;
 
 import com.team.ShopSystem.common.vo.Result;
+import com.team.ShopSystem.sys.entity.CartGoods;
+import com.team.ShopSystem.sys.entity.CartGoodsPlus;
 import com.team.ShopSystem.sys.entity.Goods;
 import com.team.ShopSystem.sys.entity.User;
 import com.team.ShopSystem.sys.mapper.CartGoodsMapper;
 import com.team.ShopSystem.sys.mapper.CartMapper;
+import com.team.ShopSystem.sys.mapper.GoodsMapper;
 import com.team.ShopSystem.sys.service.ICartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Zhong Siqi
@@ -28,6 +34,9 @@ public class CartController {
     @Resource
     CartGoodsMapper cartGoodsMapper;
 
+    @Resource
+    GoodsMapper goodsMapper;
+
     @Autowired
     ICartService cartService;
 
@@ -35,10 +44,14 @@ public class CartController {
     CartMapper cartMapper;
     @GetMapping("/showList")
     @ApiOperation("显示某用户购物车中的所有未下架商品")
-    public Result<List<Goods>> showList(@RequestParam Integer userId){
+    public Result<List<CartGoodsPlus>> showList(@RequestParam Integer userId){
         Integer cartId=cartMapper.getCartByUserId(userId);
-        List<Goods> list = cartGoodsMapper.getByCartId(cartId);
-        return Result.success(list);
+        List<CartGoods> list = cartGoodsMapper.getByCartId(cartId);
+        List<CartGoodsPlus> goodsList=new ArrayList<CartGoodsPlus>();
+        for(CartGoods cartGoods:list){
+            goodsList.add(new CartGoodsPlus(goodsMapper.getById(cartGoods.getGoodsId()),cartGoods));
+        }
+        return Result.success(goodsList);
     }
 
 
