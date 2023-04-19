@@ -336,18 +336,18 @@
 
             <q-space />
 
-            <q-btn color="grey" round flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-              @click="expanded = !expanded" />
+            <q-btn color="grey" round flat dense :icon="intermediateExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              @click="intermediateExpanded = !intermediateExpanded" />
           </q-card-actions>
 
-          <!-- <q-slide-transition>
-            <div v-show="expanded">
+          <!-- 商城中间账户的流水 -->
+          <q-slide-transition>
+            <div v-show="intermediateExpanded">
               <q-separator />
-              <q-card-section class="text-subitle2">
-                {{ transition }}
-              </q-card-section>
+              <q-table :rows="intermediateAccountTrans" :columns="TransitionColumn" row-key="transferName"
+                style="margin-top: 2%; margin-left: 1%;" />
             </div>
-          </q-slide-transition> -->
+          </q-slide-transition>
         </q-card>
       </div>
 
@@ -371,16 +371,15 @@
 
             <q-space />
 
-            <q-btn color="grey" round flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-              @click="expanded = !expanded" />
+            <q-btn color="grey" round flat dense :icon="profitExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              @click="profitExpanded = !profitExpanded" />
           </q-card-actions>
 
           <q-slide-transition>
-            <div v-show="expanded">
+            <div v-show="profitExpanded">
               <q-separator />
-              <q-card-section class="text-subitle2">
-                {{ transition }}
-              </q-card-section>
+              <q-table :rows="profitAccountTrans" :columns="TransitionColumn" row-key="transferName"
+                style="margin-top: 2%; margin-left: 1%;" />
             </div>
           </q-slide-transition>
         </q-card>
@@ -571,6 +570,17 @@ let rcShopAppRows = ref([])
 let rcCommodityUpApp = ref([])
 let rcCommodityEditApp = ref([])
 
+// 管理员可查看的商城中间账户和利润账户
+let profitExpanded = ref(false)
+let intermediateExpanded = ref(false)
+let TransitionColumn = [
+  { name: 'transferName', label: '转账人', field: 'transferName' }, 
+  { name: 'receiveName', label: '收款人', field: 'receiveName' }, 
+  { name: 'amount', label: '金额（¥）', field: 'amount' }, 
+]
+let intermediateAccountTrans = ref([])
+let profitAccountTrans = ref([])
+
 onMounted(() => {
   // 获取所有待审批的商店信息：开店/闭店
   axiosInstance.post('/shop/showByStatus0_3').then((response) => {
@@ -749,6 +759,7 @@ onMounted(() => {
     console.log('get profile account msg: ', r);
     profitAccount.value = r
   });
+  getTransfer()
 })
 
 function showTransitionMode() {
@@ -789,6 +800,23 @@ function selectRejected() {
 //     console.log('get shop name: ', r);
 //   });
 // }
+
+function getTransfer() {
+  axiosInstance.post('/transferRecords/admin', {
+    // shopId: shopId,
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get admin transfer records: ', r);
+    r.forEach(function (item) {
+      // console.log('get receive name: ', item['receiveName'])
+      if (item['receiveName'] === 'admin_intermediate') {
+        intermediateAccountTrans.value.push(item)
+      } else if (item['receiveName'] === 'admin_profit') {
+        profitAccountTrans.value.push(item)
+      }
+    });
+  });
+}
 
 // 同意申请
 function approveApplication(rcShopAppRow) {
@@ -1001,4 +1029,5 @@ function getSelectedString() {
 .router-link-class {
   color: inherit;
   text-decoration: none;
-}</style>
+}
+</style>

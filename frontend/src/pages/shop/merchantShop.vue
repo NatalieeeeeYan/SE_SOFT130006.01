@@ -95,27 +95,39 @@
 
     <q-page-container>
       <router-view />
-      <div class="q-pa-md row items-start q-gutter-md">
-        <!--商店基本信息-->
-        <div class="q-pa-ma" style="width:100%;">
-          <div style="width:300px;">
-            <!-- <q-img :src="url" style="border: 50%; left:50px" /> -->
-            <div class="text-h4 q-mt-sm q-mb-xs" style="margin-left:3%; height:50px"> 店铺名称：{{ shopName }}</div>
-            <div>
-              <q-separator />
-            </div>
-            <div class="text-caption text-grey" style="margin-left:3%; margin-top: 3%;">
-              店铺介绍：{{ shopIntroduce }}
-            </div>
-            <div class="col-auto text-grey text-h6 q-pt-md row no-wrap items-center" style="margin-left:3%; ">
-              <q-icon name="place" />
-              店铺地址：{{ shopAddress }}
-            </div>
-            <div class="text-grey text-h6" style="margin-left:3%; ">
-              <q-icon name="alarm" />
-              注册时间：{{ shopRegistrationTime }}
-            </div>
-          </div>
+      <div class="q-pa-md row items-start q-gutter-md" style="width: 100%;">
+
+        <div class="shopInfoDisplay">
+          <q-card class="my-card" flat bordered style="max-width: 100%; width: 100%; margin-left: 5%; margin-top: 3%;">
+            <q-card-section>
+              <div class="text-overline text-orange-9">注册时间：{{ registrationTime }}</div>
+              <div class="text-h5 q-mt-sm q-mb-xs">店铺名称：{{ shopName }}</div>
+              <div class="text-caption text-grey">简介：{{ shopIntroduce }}</div>
+            </q-card-section>
+
+            <q-card-actions>
+              <!-- <div class="cursor-pointer" style="width: 100px; margin-left: 10%;">
+              充值
+              <q-popup-edit v-model="label" auto-save>
+                <q-input v-model="money" hint="请输入充值金额" dense autofocus counter @keyup.enter="topUpAccount" />
+              </q-popup-edit>
+            </div> -->
+              <q-btn flat color="secondary" label="下拉查看流水" style="margin-left: 0.5%;" />
+
+              <q-space />
+
+              <q-btn color="grey" round flat dense :icon="transferExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                @click="transferExpanded = !transferExpanded" />
+            </q-card-actions>
+
+            <q-slide-transition>
+              <div v-show="transferExpanded">
+                <q-separator />
+                <q-table :rows="transitionRows" :columns="transitionColumn" row-key="transferName"
+                  style="margin-top: 2%; margin-left: 1%;" />
+              </div>
+            </q-slide-transition>
+          </q-card>
         </div>
 
         <!--商店商品展示-->
@@ -258,7 +270,7 @@
 
                             <div class="row no-wrap items-center">
                               <div class="col text-h6 ellipsis">
-                                <q-btn flat class="text-h6" >
+                                <q-btn flat class="text-h6">
                                   {{ commodity.goodsName }}
                                 </q-btn>
                               </div>
@@ -464,13 +476,13 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance } from 'vue'
+import { ref, computed, getCurrentInstance, getTransitionRawChildren } from 'vue'
 import { useStore } from 'src/store'
 import axios from 'axios'
 import { onMounted } from 'vue'
 
 const store = useStore()
-const shopId = 1;
+// const shopId = 1;
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
@@ -520,9 +532,21 @@ let onShelveCmdt = ref([])
 let removedCmdt = ref([])
 let applyingCmdt = ref([])
 
+// 流水
+let transitionColumn = [
+  { name: 'transferName', label: '转账人', field: 'transferName' }, 
+  { name: 'receiveName', label: '收款人', field: 'receiveName' }, 
+  { name: 'amount', label: '金额（¥）', field: 'amount' },
+]
+let transitionRows = ref([])
+
 
 const shopName = computed(() => {
   return shops.value ? shops.value.shopName : '';
+});
+
+const shopId = computed(() => {
+  return shops.value ? shops.value.shopId : '';
 });
 
 const shopIntroduce = computed(() => {
@@ -738,6 +762,7 @@ onMounted(() => {
   //   console.log(commodities.value)
   // });
 
+  getTransition()
 });
 
 function toEditCommodity(commodity) {
@@ -934,6 +959,19 @@ function getRemovedCommodities() {
       }
     });
     console.log('获取下架商品(record 5)：', removedCmdt.value)
+  });
+}
+
+function getTransition() {
+  console.log('current shopid: ', shopId)
+  axiosInstance.post('/transferRecords/shop', {
+    shopId: 1,
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get shop transfer records: ', r);
+    r.forEach(function (item) {
+      transitionRows.value.push(item); 
+    });
   });
 }
 
