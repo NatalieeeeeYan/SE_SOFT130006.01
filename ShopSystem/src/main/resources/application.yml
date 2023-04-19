@@ -37,4 +37,4 @@ constants:
   rejectDeleted: 5
 
 prop:
-  upload-folder: /Users/libo/lab3/ShopSystem/uploadImage
+  upload-folder: /Users/libo/SE_SOFT130006.01/ShopSystem/uploadImage/

@@ -12,7 +12,7 @@
           </q-avatar>
           {{ shopName }}
         </q-toolbar-title>
-        <q-btn flat round dense icon="update" class="q-mr-xs" @click="updata"></q-btn>
+        <q-btn flat round dense icon="update" class="q-mr-xs" @click="update"></q-btn>
 
       </q-toolbar>
     </q-header>
@@ -97,11 +97,13 @@
       <router-view />
       <div class="q-pa-md row items-start q-gutter-md" style="width: 100%;">
 
-        <div class="shopInfoDisplay">
-          <q-card class="my-card" flat bordered style="max-width: 100%; width: 100%; margin-left: 5%; margin-top: 3%;">
+        <div class="shopInfoDisplay" style="width: 30%; margin-top: 3%;">
+          <q-card class="my-card" flat bordered>
             <q-card-section>
-              <div class="text-overline text-orange-9">注册时间：{{ registrationTime }}</div>
+              <div class="text-overline text-orange-9">注册时间：{{ shopRegistrationTime }}</div>
               <div class="text-h5 q-mt-sm q-mb-xs">店铺名称：{{ shopName }}</div>
+              <div class="text-overline text-grey "><q-icon name="place" />
+                {{ shopAddress }}</div>
               <div class="text-caption text-grey">简介：{{ shopIntroduce }}</div>
             </q-card-section>
 
@@ -131,7 +133,7 @@
         </div>
 
         <!--商店商品展示-->
-        <div class="q-pa-ma" style="width: 100%;">
+        <div class="q-pa-ma" style="width: 65%;">
           <div>
             <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
               narrow-indicator>
@@ -476,13 +478,12 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance, getTransitionRawChildren } from 'vue'
+import { ref, computed, getCurrentInstance } from 'vue'
 import { useStore } from 'src/store'
 import axios from 'axios'
 import { onMounted } from 'vue'
 
 const store = useStore()
-// const shopId = 1;
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
@@ -494,11 +495,11 @@ const links1 = [
   { icon: 'star_border', text: '资金信息' }
 ]
 
-const tab = ref("Commodity")
-const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
+const tab = ref('onShelve')
 const accept = ref(false)
 const layout = ref(false)
 const layout_delete = ref(false)
+const shopId = store.state.shopId
 let editCommodity = ref(false)
 let viewOnly = ref(true)
 
@@ -534,8 +535,8 @@ let applyingCmdt = ref([])
 
 // 流水
 let transitionColumn = [
-  { name: 'transferName', label: '转账人', field: 'transferName' }, 
-  { name: 'receiveName', label: '收款人', field: 'receiveName' }, 
+  { name: 'transferName', label: '转账人', field: 'transferName' },
+  { name: 'receiveName', label: '收款人', field: 'receiveName' },
   { name: 'amount', label: '金额（¥）', field: 'amount' },
 ]
 let transitionRows = ref([])
@@ -543,10 +544,6 @@ let transitionRows = ref([])
 
 const shopName = computed(() => {
   return shops.value ? shops.value.shopName : '';
-});
-
-const shopId = computed(() => {
-  return shops.value ? shops.value.shopId : '';
 });
 
 const shopIntroduce = computed(() => {
@@ -570,6 +567,15 @@ const myForm = ref(null);
 // leftDrawerOpen.value = !leftDrawerOpen.value
 // }
 
+function update() {
+  getShelvedCommodities()
+  getApplication()
+  getRemovedCommodities()
+  getTransition()
+
+  instance.proxy.$forceUpdate();
+}
+
 function checkprice(price) {
   if (isNaN(price)) {
     return false;
@@ -580,6 +586,7 @@ function checkprice(price) {
   return true; // 输入值合法
 }
 
+//下架商品
 function deleteCommodity(commodity) {
   console.log('delete commodity parameter: ', commodity.id)
   axiosInstance.put('/Goods/remove',
@@ -592,58 +599,10 @@ function deleteCommodity(commodity) {
       }
     }).then((response) => {
       console.log('下架商品：', response)
-    });
-}
-
-//下架商品
-function deleteOneCommodity() {
-  axiosInstance.put('/Goods/remove',
-    {
-      goodsId: delete_id.value
-    },
-    {
-      params: {
-        goodsId: delete_id.value
-      }
-    }).then((response) => {
-      console.log("下架商品")
-      const r = response.data['data']
-      console.log(r)
-      layout_delete.value = false
-
       update()
     });
 }
 
-function update() {
-  //显示该店铺的信息
-  axiosInstance.get('/shop/showShopByShopId', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    const [year, month, day] = r.registrationTime;
-    r.registrationTime = `${year}-${month}-${day}`;
-    console.log('shop message')
-    shops.value = r
-    console.log(shops.value)
-  });
-
-  //显示该店铺的所有上架成功的商品
-  axiosInstance.get('/Goods/showAddRecord_1', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    console.log('showAddRecord_1')
-    onShelveCmdt.value = r
-    console.log('获取在售商品：', onShelveCmdt.value)
-  });
-
-  instance.proxy.$forceUpdate();
-}
 
 // 提交上架商品的表单
 function onSubmit() {
@@ -653,12 +612,12 @@ function onSubmit() {
         goodsName: goodsName.value,
         description: description.value,
         price: price.value,
-        shopId: 1,
+        shopId: shopId,
         image: image.value
       },
       {
         params: {
-          shopId: 1
+          shopId: shopId
         }
       }
     )
@@ -672,6 +631,7 @@ function onSubmit() {
         layout.value = false;
         console.log('layout');
         console.log(layout.value);
+        update()
         onReset()
       }
       console.log(response.data);
@@ -705,159 +665,23 @@ function handleUpload(event) {
 
 onMounted(() => {
   //显示该店铺的信息
-  // axiosInstance.get('/shop/showAddRecord_1', {
-  //   params: {
-  //     shopId: shopId
-  //   }
-  // }).then((response) => {
-  //   const r = response.data['data']
-  //   const [year, month, day] = r.registrationTime;
-  //   r.registrationTime = `${year}-${month}-${day}`;
-  //   console.log('shop message')
-  //   shops.value = r
-  //   console.log(shops.value)
-  // });
-  console.log('current shop id: ', shopId)
-
-  // 获取所有上架商品的信息
-  axiosInstance.get('/Goods/showAddRecord_1', {
+  axiosInstance.get('/shop/showShopByShopId', {
     params: {
-      shopId: 1
+      shopId: shopId
     }
   }).then((response) => {
     const r = response.data['data']
-    r.forEach(function (item) {
-      item.status = '在售中'
-    });
-    onShelveCmdt.value = r
-    console.log('获取在售商品(record 1)：', onShelveCmdt.value)
-  });
-  // 修改商品信息失败的案例也算做上架中的商品
-  axiosInstance.get('/Goods/showUpdateRecord_9', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    r.forEach(function (item) {
-      if (item !== null) {
-        item.status = '在售中（修改信息失败）'
-        onShelveCmdt.value.push(item)
-      }
-    });
-    console.log('获取在售商品(record 9)：', onShelveCmdt.value)
-  });
-  // 修改信息成功的案例也算上架商品
-  axiosInstance.get('/Goods/showUpdateRecord_8', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    r.forEach(function (item) {
-      if (item !== null) {
-        item.status = '在售中（修改信息成功）'
-        onShelveCmdt.value.push(item)
-      }
-    });
-    console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+    const [year, month, day] = r.registrationTime;
+    r.registrationTime = `${year}-${month}-${day}`;
+    console.log('shop message')
+    shops.value = r
+    console.log(shops.value)
   });
 
-  // 所有申请中的商品
-  // 上架等待审批
-  axiosInstance.get('/Goods/showAddRecord_0', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    r.forEach(function (item) {
-      // console.log(item.id)
-      // item.id is shopId!
-      if (item !== null) {
-        item.status = '上架申请审批中'
-        applyingCmdt.value.push(item)
-      }
-    });
-    console.log('获取申请商品(record 0)：', applyingCmdt.value)
-  });
-  // 上架失败
-  axiosInstance.get('/Goods/showAddRecord_2', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    r.forEach(function (item) {
-      if (item !== null) {
-        item.status = '上架申请失败'
-        applyingCmdt.value.push(item)
-      }
-    });
-    console.log('获取申请商品(record 2)：', applyingCmdt.value)
-  });
-  // 修改信息审批中
-  axiosInstance.get('/Goods/showUpdateRecord_7', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    r.forEach(function (item) {
-      if (item !== null) {
-        item.status = '修改信息申请审批中'
-        applyingCmdt.value.push(item)
-      }
-    });
-    console.log('获取申请商品(record 7)：', applyingCmdt.value)
-  });
-  // 修改信息失败
-  axiosInstance.get('/Goods/showUpdateRecord_9', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    r.forEach(function (item) {
-      if (item !== null) {
-        item.status = '修改信息申请失败'
-        applyingCmdt.value.push(item)
-      }
-    });
-    console.log('获取申请商品(record 9)：', applyingCmdt.value)
-  });
-  
-  // 下架的商品
-  axiosInstance.get('/Goods/showDeleteRecord_5', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    r.forEach(function (item) {
-      if (item !== null) {
-        item.status = '已下架'
-        removedCmdt.value.push(item)
-      }
-    });
-    console.log('获取下架商品(record 5)：', removedCmdt.value)
-  });
-
-  // 获取流水
-  // console.log('current shopid: ', shopId)
-  let id = ref(1)
-  console.log('id: ', id.value)
-  axiosInstance.post('/transferRecords/shop', {
-    params: {
-      id: 1, 
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    console.log('get shop transfer records: ', r);
-    r.forEach(function (item) {
-      transitionRows.value.push(item); 
-    });
-  });
+  getShelvedCommodities()
+  getApplication()
+  getRemovedCommodities()
+  getTransition()
 });
 
 function toEditCommodity(commodity) {
@@ -934,7 +758,7 @@ function getShelvedCommodities() {
       item.status = '在售中'
     });
     onShelveCmdt.value = r
-    console.log('获取在售商品(record 1)：', onShelveCmdt.value)
+    // console.log('获取在售商品(record 1)：', onShelveCmdt.value)
   });
   // 修改商品信息成功的案例也算做上架中的商品
   axiosInstance.get('/Goods/showUpdateRecord_8', {
@@ -951,7 +775,7 @@ function getShelvedCommodities() {
         onShelveCmdt.value.push(item)
       }
     });
-    console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+    // console.log('获取在售商品(record 8)：', onShelveCmdt.value)
   });
 }
 
@@ -972,7 +796,7 @@ function getApplication() {
         applyingCmdt.value.push(item)
       }
     });
-    console.log('获取申请商品(record 0)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 0)：', applyingCmdt.value)
   });
   // 上架失败
   axiosInstance.get('/Goods/showAddRecord_2', {
@@ -992,7 +816,7 @@ function getApplication() {
     // if (r !== []){
     //     applyingCmdt.value.push(r)
     //   }
-    console.log('获取申请商品(record 2)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 2)：', applyingCmdt.value)
   });
   // 修改信息审批中
   axiosInstance.get('/Goods/showUpdateRecord_7', {
@@ -1012,7 +836,7 @@ function getApplication() {
     // if (r !== []){
     //     applyingCmdt.value.push(r)
     //   }
-    console.log('获取申请商品(record 7)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 7)：', applyingCmdt.value)
   });
   // 修改信息失败
   axiosInstance.get('/Goods/showUpdateRecord_9', {
@@ -1032,7 +856,7 @@ function getApplication() {
     // if (r !== []){
     //     applyingCmdt.value.push(r)
     //   }
-    console.log('获取申请商品(record 9)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 9)：', applyingCmdt.value)
   });
 }
 
@@ -1060,12 +884,16 @@ function getRemovedCommodities() {
 function getTransition() {
   console.log('current shopid: ', shopId)
   axiosInstance.post('/transferRecords/shop', {
-    shopId: 1,
+    id:shopId
+  },{
+    params: {
+      id: shopId
+    }
   }).then((response) => {
     const r = response.data['data']
     console.log('get shop transfer records: ', r);
     r.forEach(function (item) {
-      transitionRows.value.push(item); 
+      transitionRows.value.push(item);
     });
   });
 }

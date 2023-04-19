@@ -101,75 +101,79 @@
           <q-separator style="width: 100%; margin-top: 3%;" />
 
           <p style="font-size: large; margin-top: 2%; margin-left: 2%;">待批准的商品申请</p>
-          <!-- 待审批的上架申请 -->
-          <div v-for="commodity in rcCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
-            style="width: 350px; max-width: 100%;">
-            <q-card class="edit-commodity-card" style="width: 100%;">
-              <div class="q-pa-md">
-                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                  infinite>
-                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
-                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
-                </q-carousel>
-              </div>
 
-              <q-card-section>
-                <div class="row no-wrap items-center">
-                  <div class="col text-h6 ellipsis">
-                    {{ commodity.goodsName }}
+          <div class="flex q-justify-around" style="width:800px">
+            <!-- 待审批的上架申请 -->
+            <div v-for="commodity in rcCommodityUpApp" :key="commodity" class="flex q-py-xs"
+              style="width: 350px; max-width:40%">
+              <q-card class="edit-commodity-card" style="width: 40%;">
+                <div class="q-pa-md">
+                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                    infinite>
+                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                      :img-src="image" />
+                  </q-carousel>
+                </div>
+
+
+                <q-card-section>
+                  <div class="row no-wrap items-center">
+                    <div class="col text-h6 ellipsis">
+                      {{ commodity.goodsName }}
+                    </div>
                   </div>
-                </div>
-                <div class="text-subtitle1">
-                  ¥ price: {{ commodity.price }}
-                </div>
-                <div class="text-caption text-grey">
-                  {{ commodity.description }}
-                </div>
-              </q-card-section>
-
-              <q-card-actions>
-                <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity.id)" />
-                <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityUpdate(commodity.id)" />
-              </q-card-actions>
-            </q-card>
-            <q-separator />
-          </div>
-          <!-- 待审批的修改信息申请 -->
-          <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
-            style="width: 350px; max-width: 100%;">
-            <q-card class="edit-commodity-card" style="width: 100%;">
-              <div class="q-pa-md">
-                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                  infinite>
-                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
-                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
-                </q-carousel>
-              </div>
-
-              <q-card-section>
-                <div class="row no-wrap items-center">
-                  <div class="col text-h6 ellipsis">
-                    {{ commodity.goodsName }}
+                  <div class="text-subtitle1">
+                    ¥ price: {{ commodity.price }}
                   </div>
-                </div>
-                <div class="text-subtitle1">
-                  ¥ price: {{ commodity.price }}
-                </div>
-                <div class="text-caption text-grey">
-                  {{ commodity.description }}
-                </div>
-              </q-card-section>
+                  <div class="text-caption text-grey">
+                    {{ commodity.description }}
+                  </div>
+                </q-card-section>
 
-              <q-card-actions>
-                <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity.id)" />
-                <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity.id)" />
-              </q-card-actions>
-            </q-card>
+                <q-card-actions>
+                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity.id)" />
+                  <q-btn color="negative" class="q-mx-auto" icon="clear"
+                    @click="disapproveCommodityUpdate(commodity.id)" />
+                </q-card-actions>
+              </q-card>
+              <q-separator />
+            </div>
+            <!-- 待审批的修改信息申请 -->
+
+            <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+              style="width: 400px">
+              <q-card class="edit-commodity-card" style="width: 350px;">
+                <div class="q-pa-md">
+                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                    infinite>
+                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                      :img-src="image" />
+                  </q-carousel>
+                </div>
+
+                <q-card-section>
+                  <div class="row no-wrap items-center">
+                    <div class="col text-h6 ellipsis">
+                      {{ commodity.goodsName }}
+                    </div>
+                  </div>
+                  <div class="text-subtitle1">
+                    ¥ price: {{ commodity.price }}
+                  </div>
+                  <div class="text-caption text-grey">
+                    {{ commodity.description }}
+                  </div>
+                </q-card-section>
+
+                <q-card-actions>
+                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity.id)" />
+                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity.id)" />
+                </q-card-actions>
+              </q-card>
+            </div>
+
           </div>
+
         </div>
 
         <div class="approvedApps" v-if="showApprovedApps">
@@ -179,66 +183,66 @@
           <q-separator style="width: 100%; margin-top: 3%;" />
 
           <p style="font-size: large; margin-top: 2%; margin-left: 2%;">已同意的商品申请</p>
-          <!-- 已通过的上架申请 -->
-          <div v-for="commodity in aCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
-            style="width: 350px; max-width: 100%;">
-            <q-card class="edit-commodity-card" style="width: 100%;">
-              <div class="q-pa-md">
-                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                  infinite>
-                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
-                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
-                </q-carousel>
-              </div>
+          <div class="flex q-justify-around" style="width:800px">
+            <!-- 已通过的上架申请 -->
 
-              <q-card-section>
-                <div class="row no-wrap items-center">
-                  <div class="col text-h6 ellipsis">
-                    {{ commodity.goodsName }}
+            <div v-for="commodity in aCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
+              style="width: 400px;">
+              <q-card class="edit-commodity-card" style="width: 350px;">
+                <div class="q-pa-md">
+                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                    infinite>
+                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                      :img-src="image" />
+                  </q-carousel>
+                </div>
+
+                <q-card-section>
+                  <div class="row no-wrap items-center">
+                    <div class="col text-h6 ellipsis">
+                      {{ commodity.goodsName }}
+                    </div>
                   </div>
-                </div>
-                <div class="text-subtitle1">
-                  ¥ price: {{ commodity.price }}
-                </div>
-                <div class="text-caption text-grey">
-                  {{ commodity.description }}
-                </div>
-              </q-card-section>
-
-            </q-card>
-            <q-separator />
-          </div>
-          <!-- 已通过的修改信息申请 -->
-          <div v-for="commodity in aCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
-            style="width: 350px; max-width: 100%;">
-            <q-card class="edit-commodity-card" style="width: 100%;">
-              <div class="q-pa-md">
-                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                  infinite>
-                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
-                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
-                </q-carousel>
-              </div>
-
-              <q-card-section>
-                <div class="row no-wrap items-center">
-                  <div class="col text-h6 ellipsis">
-                    {{ commodity.goodsName }}
+                  <div class="text-subtitle1">
+                    ¥ price: {{ commodity.price }}
                   </div>
-                </div>
-                <div class="text-subtitle1">
-                  ¥ price: {{ commodity.price }}
-                </div>
-                <div class="text-caption text-grey">
-                  {{ commodity.description }}
-                </div>
-              </q-card-section>
+                  <div class="text-caption text-grey">
+                    {{ commodity.description }}
+                  </div>
+                </q-card-section>
 
-            </q-card>
+              </q-card>
+              <q-separator />
+            </div>
+
+            <!-- 已通过的修改信息申请 -->
+            <div v-for="commodity in aCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+              style="width: 400px">
+              <q-card class="edit-commodity-card" style="width: 350%;">
+                <div class="q-pa-md">
+                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                    infinite>
+                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                      :img-src="image" />
+                  </q-carousel>
+                </div>
+
+                <q-card-section>
+                  <div class="row no-wrap items-center">
+                    <div class="col text-h6 ellipsis">
+                      {{ commodity.goodsName }}
+                    </div>
+                  </div>
+                  <div class="text-subtitle1">
+                    ¥ price: {{ commodity.price }}
+                  </div>
+                  <div class="text-caption text-grey">
+                    {{ commodity.description }}
+                  </div>
+                </q-card-section>
+
+              </q-card>
+            </div>
           </div>
 
         </div>
@@ -251,68 +255,65 @@
           <q-separator style="width: 100%; margin-top: 3%;" />
 
           <p style="font-size: large; margin-top: 2%; margin-left: 2%;">已拒绝的商品申请</p>
-          <!-- 已拒绝的上架申请 -->
-          <div v-for="commodity in rCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
-            style="width: 350px; max-width: 100%;">
-            <q-card class="edit-commodity-card" style="width: 100%;">
-              <div class="q-pa-md">
-                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                  infinite>
-                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
-                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
-                </q-carousel>
-              </div>
+          <div class="flex q-justify-around" style="width:800px">
+            <!-- 已拒绝的上架申请 -->
+            <div v-for="commodity in rCommodityUpApp" :key="commodity" class="flex q-py-xs justify-around"
+              style="width: 400px">
+              <q-card class="edit-commodity-card" style="width: 350px;">
+                <div class="q-pa-md">
+                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                    infinite>
+                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                      :img-src="image" />
+                  </q-carousel>
+                </div>
 
-              <q-card-section>
-                <div class="row no-wrap items-center">
-                  <div class="col text-h6 ellipsis">
-                    {{ commodity.goodsName }}
+                <q-card-section>
+                  <div class="row no-wrap items-center">
+                    <div class="col text-h6 ellipsis">
+                      {{ commodity.goodsName }}
+                    </div>
                   </div>
-                </div>
-                <div class="text-subtitle1">
-                  ¥ price: {{ commodity.price }}
-                </div>
-                <div class="text-caption text-grey">
-                  {{ commodity.description }}
-                </div>
-              </q-card-section>
-
-            </q-card>
-            <q-separator />
-          </div>
-          <!-- 已拒绝的修改信息申请 -->
-          <div v-for="commodity in rCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
-            style="width: 350px; max-width: 100%;">
-            <q-card class="edit-commodity-card" style="width: 100%;">
-              <div class="q-pa-md">
-                <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                  infinite>
-                  <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-                  <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-                  <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
-                  <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
-                </q-carousel>
-              </div>
-
-              <q-card-section>
-                <div class="row no-wrap items-center">
-                  <div class="col text-h6 ellipsis">
-                    {{ commodity.goodsName }}
+                  <div class="text-subtitle1">
+                    ¥ price: {{ commodity.price }}
                   </div>
-                </div>
-                <div class="text-subtitle1">
-                  ¥ price: {{ commodity.price }}
-                </div>
-                <div class="text-caption text-grey">
-                  {{ commodity.description }}
-                </div>
-              </q-card-section>
+                  <div class="text-caption text-grey">
+                    {{ commodity.description }}
+                  </div>
+                </q-card-section>
 
-            </q-card>
+              </q-card>
+              <q-separator />
+            </div>
+            <!-- 已拒绝的修改信息申请 -->
+            <div v-for="commodity in rCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+              style="width: 400px">
+              <q-card class="edit-commodity-card" style="width: 350px">
+                <div class="q-pa-md">
+                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                    infinite>
+                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                      :img-src="image" />
+                  </q-carousel>
+                </div>
+
+                <q-card-section>
+                  <div class="row no-wrap items-center">
+                    <div class="col text-h6 ellipsis">
+                      {{ commodity.goodsName }}
+                    </div>
+                  </div>
+                  <div class="text-subtitle1">
+                    ¥ price: {{ commodity.price }}
+                  </div>
+                  <div class="text-caption text-grey">
+                    {{ commodity.description }}
+                  </div>
+                </q-card-section>
+
+              </q-card>
+            </div>
           </div>
-
         </div>
       </div>
 
@@ -336,7 +337,8 @@
 
             <q-space />
 
-            <q-btn color="grey" round flat dense :icon="intermediateExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+            <q-btn color="grey" round flat dense
+              :icon="intermediateExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
               @click="intermediateExpanded = !intermediateExpanded" />
           </q-card-actions>
 
@@ -574,9 +576,9 @@ let rcCommodityEditApp = ref([])
 let profitExpanded = ref(false)
 let intermediateExpanded = ref(false)
 let TransitionColumn = [
-  { name: 'transferName', label: '转账人', field: 'transferName' }, 
-  { name: 'receiveName', label: '收款人', field: 'receiveName' }, 
-  { name: 'amount', label: '金额（¥）', field: 'amount' }, 
+  { name: 'transferName', label: '转账人', field: 'transferName' },
+  { name: 'receiveName', label: '收款人', field: 'receiveName' },
+  { name: 'amount', label: '金额（¥）', field: 'amount' },
 ]
 let intermediateAccountTrans = ref([])
 let profitAccountTrans = ref([])
@@ -800,7 +802,7 @@ function selectRejected() {
 
 // function getShopName(shopId) {
 //   axiosInstance.get('/shop/showShopByShopId', {
-//     shopId: shopId, 
+//     shopId: shopId,
 //   }).then((response) => {
 //     const r = response.data['data']
 //     console.log('get shop name: ', r);

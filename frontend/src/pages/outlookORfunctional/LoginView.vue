@@ -57,11 +57,11 @@
           <br />
           <div class="admin">
             <router-link to="/adminLogin" style="
-                      text-decoration: none;
-                      display: flex;
-                      font-size: 15px;
-                      margin-top: 4px;
-                    ">管理员入口</router-link>
+                        text-decoration: none;
+                        display: flex;
+                        font-size: 15px;
+                        margin-top: 4px;
+                      ">管理员入口</router-link>
           </div>
         </div>
       </div>
@@ -73,16 +73,16 @@
         </div>
 
         <div class="input-box">
-          <q-form class="q-gutter-md" @submit="register_consumer">
+          <q-form ref="consumer_r" class="q-gutter-md" @submit="register_consumer">
             <!-- <input name="username" v-model="name_r" type="text" placeholder="用户名" /> -->
-            <q-input ref="name_consumer_r" filled name="username" v-model.trim="name_r" label="姓名 *" hint="username"
+            <q-input  filled name="username" v-model.trim="name_r" label="姓名 *" hint="username"
               lazy-rules :rules="[
                 (val) => (val && val.length > 0) || '请输入您的用户名',
                 (val) => code_r != 20002 || '用户名或密码错误',
                 (val) => code_r != 20008 || '用户类错误',
               ]" @click="code_r = 0"></q-input>
             <!-- <br><br> -->
-            <q-input ref="password_consumer_r" name="password" v-model="password_r" filled
+            <q-input  name="password" v-model="password_r" filled
               :type="isPwd ? 'password' : 'text'" label="密码 *" hint="Your password *" lazy-rules :rules="[
                 (val) => (val && val.length > 0) || '请输入您的密码',
                 (val) => code_r != 20002 || '用户名或密码错误',
@@ -112,11 +112,11 @@
           </div>
           <div class="admin">
             <router-link to="/adminLogin" style="
-                      text-decoration: none;
-                      display: flex;
-                      font-size: 15px;
-                      margin-top: 4px;
-                    ">管理员入口</router-link>
+                        text-decoration: none;
+                        display: flex;
+                        font-size: 15px;
+                        margin-top: 4px;
+                      ">管理员入口</router-link>
           </div>
         </div>
       </div>
@@ -261,7 +261,7 @@ export default {
     const nameField = ref(null);
     const name_merchant_r = ref(null);
     const name_consumer_r = ref(null);
-    const password_consumer_r = ref(null);
+    const consumer_r = ref(null)
 
     const name_r = ref(null);
     const password_r = ref(null);
@@ -314,6 +314,18 @@ export default {
       return count > 1;
     };
 
+    function onReset() {
+      username.value = null;
+      accept.value = false;
+      phone.value = null;
+      idNumber.value = null;
+      address.value = null;
+      email.value = null;
+      shop.value = null;
+      password.value = null;
+      confirmPassword.value = null;
+    };
+
     return {
       code_r,
       model,
@@ -329,12 +341,11 @@ export default {
       password,
       confirmPassword,
       code,
+      consumer_r,
 
       myForm,
       name_merchant_r,
       nameField,
-      name_consumer_r,
-      password_consumer_r,
 
       name_r,
       password_r,
@@ -422,9 +433,11 @@ export default {
             if (code.value == 20000 && roleId.value == 3) {
               store.commit('setUserId', response_register.value['data']);
               router.push('/merchantpage');
+              onReset();
             } else if (code.value == 20000 && roleId.value == 2) {
               store.commit('setUserId', response_register.value['data']);
               router.push('/user');
+              onReset();
             }
             console.log(store.state.userId);
 
@@ -511,8 +524,7 @@ export default {
             console.log(response_register);
             code_r.value = response_register.value['code'];
             console.log(code_r);
-            password_consumer_r.value.validate();
-            name_consumer_r.value.validate();
+            consumer_r.value.validate();
             nameField.value.validate();
             if (code_r.value == 20000) {
               store.commit('setUserId', response_register.value['data']);

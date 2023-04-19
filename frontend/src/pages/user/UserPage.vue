@@ -19,7 +19,7 @@
       <router-view />
       <div class="q-pa-md row items-start q-gutter-md">
         <!--用户信息展示-->
-        <q-card class="my-card" flat bordered style="width: 280px">
+        <q-card class="my-card" flat bordered style="width: 20%; margin-top: 3%;">
           <q-card-section horizontal>
             <q-card-section class="q-pt-xs">
               <div class="text-overline">Overline</div>
@@ -47,7 +47,7 @@
         </q-card>
 
         <!--商品以及店铺信息展示-->
-        <div class="q-pa-ma">
+        <div class="q-pa-ma" style="max-width: 75%; ">
           <div>
             <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
               narrow-indicator>
@@ -89,7 +89,7 @@
                               </div>
                             </div>
 
-                            <q-rating v-model="stars" :max="5" size="32px" />
+                            <q-rating v-model="commodity.stars" :max="5" size="32px" />
                           </q-card-section>
 
                           <q-card-section class="q-pt-none">
@@ -124,7 +124,7 @@
                                 {{ shop.shopName }}
                               </q-btn>
                               <div class="row no-wrap items-center">
-                                <q-rating size="18px" v-model="stars" :max="5" color="primary" />
+                                <q-rating size="18px" v-model="shop.stars" :max="5" color="primary" />
                                 <!-- <span class="text-caption text-grey q-ml-sm">4.2 (551)</span> -->
                               </div>
                               <q-separator />
@@ -209,7 +209,7 @@ function addShoppingCart(id) {
   console.log(id)
   console.log("add shopping cart")
   //记得改成全局变量
-  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=1`).then((res) => {
+  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=${store.state.userId}`).then((res) => {
       console.log("cart")
       console.log(res.data.data)
     });
