@@ -54,7 +54,7 @@ public class CartController {
         for(CartGoods cartGoods:list){
             Goods goods=goodsMapper.getById(cartGoods.getGoodsId());
             goods.setImage(goodsImageMapper.getByGoodsId(cartGoods.getGoodsId()));
-            goodsList.add(new CartGoodsPlus(goodsMapper.getById(cartGoods.getGoodsId()),cartGoods));
+            goodsList.add(new CartGoodsPlus(goods,cartGoods));
         }
         return Result.success(goodsList);
     }
