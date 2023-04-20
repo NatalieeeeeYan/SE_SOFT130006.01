@@ -288,7 +288,7 @@
                         </div>
                     </div>
 
-                    <div class="profilePicture" >
+                    <div class="profilePicture">
                         <dl>
                             <dt>
                                 <label class="label" for="userName">Profile picture</label>
@@ -337,9 +337,8 @@
                         <q-slide-transition>
                             <div v-show="expanded">
                                 <q-separator />
-                                <q-card-section class="text-subitle2">
-                                    {{ transition }}
-                                </q-card-section>
+                                <q-table :rows="transitionRows" :columns="transitionCols" row-key="transferName"
+                                    style="margin-top: 2%; margin-left: 1%;" />
                             </div>
                         </q-slide-transition>
                     </q-card>
@@ -446,16 +445,18 @@ let money = ref(null)
 let balance = ref(null)
 
 // 流水相关变量
-let transition = ref('流水')
+let transitionCols = [
+    { name: 'transferName', label: '转账人', field: 'transferName' },
+    { name: 'receiveName', label: '收款人', field: 'receiveName' },
+    { name: 'amount', label: '金额（¥）', field: 'amount' },
+]
+let transitionRows = ref([])
 
 // 左侧边栏内项目icon-text列举
 const links1 = [
     { icon: 'person', text: '个人账户' },
     { icon: 'star_border', text: '资金信息' }
 ]
-// const links2 = [
-//     { icon: 'settings', text: '设置' },
-// ]
 
 onMounted(() => {
     console.log('userid: ' + userId)
@@ -491,6 +492,7 @@ onMounted(() => {
     });
     getAccount();
     console.log('balance: ', balance.value)
+    getTransition()
 });
 
 // 深色模式
@@ -635,6 +637,27 @@ function topUpAccount() {
         // myForm.value.resetValidation();
     });
 }
+
+// 获取个人账户的流水
+function getTransition() {
+    transitionRows.value = []
+    console.log('current userid(transition): ', userId)
+    axiosInstance.post('/transferRecords/user', {
+        id: userId
+    }, {
+        params: {
+            id: userId
+        }
+    }).then((response) => {
+        const r = response.data['data']
+        console.log('get user transfer records: ', r);
+        r.forEach(function (item) {
+            transitionRows.value.push(item);
+        });
+    });
+    console.log('transition: ', transitionRows.value)
+}
+
 </script>
 
 <style lang="sass">

@@ -844,6 +844,8 @@ function getComEditRejected() {
 }
 
 function getTransfer() {
+  profitAccountTrans.value = []
+  intermediateAccountTrans.value = []
   axiosInstance.post('/transferRecords/admin', {
     // shopId: shopId,
   }).then((response) => {
@@ -917,6 +919,7 @@ function approveApplication(rcShopAppRow) {
     });
     aShopAppRows.value.splice(0, aShopAppRows.value.length, ...r);
     console.log(aShopAppRows.value)
+    updata()
   });
 }
 
@@ -945,6 +948,7 @@ function disapproveApplication(rcShopAppRow) {
     }).then((response) => {
       const r = response.data['data']
       console.log(r);
+      updata()
     }).catch((error) => {
       console.error('Error:', error);
       // 处理错误
@@ -963,6 +967,7 @@ function approveCommodityUpdate(good) {
   }).then((response) => {
     const r = response.data['data']
     console.log('get 同意商品上架 msg: ', r);
+    updata()
   });
 }
 
@@ -978,6 +983,7 @@ function disapproveCommodityUpdate(good) {
   }).then((response) => {
     const r = response.data['data']
     console.log('get 不同意商品上架 msg: ', r);
+    updata()
   });
 }
 
@@ -992,6 +998,7 @@ function approveCommodityEdit(good) {
   }).then((response) => {
     const r = response.data['data']
     console.log('get 同意商品修改 msg: ', r);
+    updata()
   });
 }
 
@@ -1006,6 +1013,7 @@ function disapproveCommodityEdit(good) {
   }).then((response) => {
     const r = response.data['data']
     console.log('get 不同意商品修改 msg: ', r);
+    updata()
   });
 }
 

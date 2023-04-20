@@ -106,7 +106,7 @@
                 {{ shopAddress }}</div>
               <div class="text-caption text-grey">简介：{{ shopIntroduce }}</div>
             </q-card-section>
-            
+
             <q-card-actions>
               <!-- <div class="cursor-pointer" style="width: 100px; margin-left: 10%;">
               充值
@@ -740,6 +740,9 @@ function postCommodityEdit() {
         console.log(layout.value);
       }
       console.log(response.data);
+      viewOnly.value = true
+      editCommodity.value = false
+      update()
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -905,8 +908,8 @@ function getRemovedCommodities() {
 function getTransition() {
   console.log('current shopid: ', shopId)
   axiosInstance.post('/transferRecords/shop', {
-    id:shopId
-  },{
+    id: shopId
+  }, {
     params: {
       id: shopId
     }

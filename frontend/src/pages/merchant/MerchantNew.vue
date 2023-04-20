@@ -254,15 +254,6 @@
                 </q-splitter>
               </q-tab-panel>
 
-              <!-- <q-tab-panel name="alarms">
-                <div class="text-h6">Alarms</div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </q-tab-panel>
-
-              <q-tab-panel name="movies">
-                <div class="text-h6">Movies</div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </q-tab-panel> -->
             </q-tab-panels>
           </q-card>
         </div>
@@ -593,6 +584,8 @@ function onSubmit() {
     // 处理错误
     myForm.value.resetValidation();
   });
+  onReset()
+  layout.value = false
 }
 
 // 重置申请开店表单
@@ -632,7 +625,7 @@ onMounted(() => {
             break;
           case 2:
             obj.status = '开店未通过';
-            applyingShops.value.push(obj)
+            closedShops.value.push(obj)
             break;
           case 3:
             obj.status = '闭店未审核';
