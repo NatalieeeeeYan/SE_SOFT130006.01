@@ -800,15 +800,6 @@ function selectRejected() {
   showRemainCheckedApps.value = false
 }
 
-// function getShopName(shopId) {
-//   axiosInstance.get('/shop/showShopByShopId', {
-//     shopId: shopId,
-//   }).then((response) => {
-//     const r = response.data['data']
-//     console.log('get shop name: ', r);
-//   });
-// }
-
 function getTransfer() {
   axiosInstance.post('/transferRecords/admin', {
     // shopId: shopId,
@@ -976,47 +967,185 @@ function disapproveCommodityEdit(good) {
 }
 
 // 刷新button事件
-// function updata() {
-//   axiosInstance.post('/shop/showByStatus0_3').then((response) => {
-//     const r = response.data['data']
-//     r.map(obj => {
-//       const [year, month, day] = obj.registrationTime;
-//       obj.registrationTime = `${year}-${month}-${day}`;
-//       return obj;
-//     });
-//     rows.value.splice(0, rows.value.length, ...r);
-//     console.log(rows.value)
-//   });
-//   instance.proxy.$forceUpdate();
-//   axiosInstance.post('/shop/showByStatus3_4').then((response) => {
-//     const r = response.data['data']
-//     console.log('get delete shop msg: ', r);
-//     r.forEach(function (item) {
-//       // console.log(item.id)
-//       // item.is is shopId!
-//       shopId.value = item.id;
-//       fund.value = r[0]['fund'];
-//     });
-//     r.map(obj => {
-//       const [year, month, day] = obj.registrationTime;
-//       obj.registrationTime = `${year}-${month}-${day}`;
-//       return obj;
-//     });
-//     rows.value.splice(0, rows.value.length, ...r);
-//     console.log(rows.value)
-//   });
-//   instance.proxy.$forceUpdate();
-//   axiosInstance.post('/shop/showByStatus2_5').then((response) => {
-//     const r = response.data['data']
-//     r.map(obj => {
-//       const [year, month, day] = obj.registrationTime;
-//       obj.registrationTime = `${year}-${month}-${day}`;
-//       return obj;
-//     });
-//     rShopAppRows.value.splice(0, rShopAppRows.value.length, ...r);
-//     console.log(rShopAppRows.value)
-//   });
-// }
+function updata() {
+  axiosInstance.post('/shop/showByStatus0_3').then((response) => {
+    const r = response.data['data']
+    console.log('get rc shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 0:
+          obj.status = '申请开店';
+          break;
+        case 3:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    rcShopAppRows.value.splice(0, rcShopAppRows.value.length, ...r);
+    console.log('rc shop value: ', rcShopAppRows.value)
+  });
+
+  // 获取所有通过审批的商店信息：开店/闭店
+  axiosInstance.post('/shop/showByStatus1_4').then((response) => {
+    const r = response.data['data']
+    console.log('get approved shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 1:
+          obj.status = '申请开店';
+          break;
+        case 4:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    aShopAppRows.value.splice(0, aShopAppRows.value.length, ...r);
+    console.log(aShopAppRows.value)
+  });
+
+  // 获取所有已拒绝审批的商店信息：开店/闭店
+  axiosInstance.post('/shop/showByStatus2_5').then((response) => {
+    const r = response.data['data']
+    console.log('get delete shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 2:
+          obj.status = '申请开店';
+          break;
+        case 5:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    rShopAppRows.value.splice(0, rShopAppRows.value.length, ...r);
+    console.log(rShopAppRows.value)
+  });
+
+  // 请求所有待审批上架的商品信息
+  axiosInstance.get('/Goods/showAddApply').then((response) => {
+    const r = response.data['data']
+    console.log('get 待审批上架商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rcCommodityEditApp.value.push(item)
+      }
+    });
+    console.log("申请待审批上架商品后：", rcCommodityUpApp.value)
+  });
+
+  // 请求所有待审批修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateApply').then((response) => {
+    const r = response.data['data']
+    console.log('get 待审批修改商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rcCommodityEditApp.value.push(item)
+      }
+    });
+    // rcCommodityEditApp.value.push(0, rcCommodityEditApp.value.length, ...r);
+    console.log("申请待审批修改商品后：", rcCommodityEditApp.value)
+  });
+
+  // 请求所有已通过上架的商品信息
+  axiosInstance.get('/Goods/showAddApproved').then((response) => {
+    const r = response.data['data']
+    console.log('get 已通过上架商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        aCommodityUpApp.value.push(item)
+      }
+    });
+    // aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("已通过上架商品后：", aCommodityUpApp.value)
+  });
+
+  // 请求所有已通过修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateApproved').then((response) => {
+    const r = response.data['data']
+    console.log('get 已通过修改商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        aCommodityUpApp.value.push(item)
+      }
+    });
+    // aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("申请已通过修改商品后：", aCommodityEditApp.value)
+  });
+
+  // 请求所有已驳回上架的商品信息
+  axiosInstance.get('/Goods/showAddRejected').then((response) => {
+    const r = response.data['data']
+    console.log('get 已驳回上架商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rCommodityUpApp.value.push(item)
+      }
+    });
+    // rCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("已驳回上架商品后：", rCommodityUpApp.value)
+  });
+
+  // 请求所有已驳回修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateRejected').then((response) => {
+    const r = response.data['data']
+    console.log('get 已驳回修改商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rCommodityUpApp.value.push(item)
+      }
+    });
+    // rCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("申请已驳回修改商品后：", rCommodityEditApp.value)
+  });
+
+  // 获取商城中间账号信息
+  axiosInstance.post('/admin/getIntermediateAccount').then((response) => {
+    const r = response.data['data']
+    console.log('get intermediate account msg: ', r);
+    intermediateAccount.value = r
+  });
+
+  // 获取商城利润账户信息
+  axiosInstance.post('/admin/getProfitAccount').then((response) => {
+    const r = response.data['data']
+    console.log('get profile account msg: ', r);
+    profitAccount.value = r
+  });
+  getTransfer()
+}
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
