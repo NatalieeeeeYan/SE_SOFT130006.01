@@ -12,7 +12,7 @@
           </q-avatar>
           {{ shopName }}
         </q-toolbar-title>
-        <q-btn flat round dense icon="update" class="q-mr-xs" @click="updata"></q-btn>
+        <q-btn flat round dense icon="update" class="q-mr-xs" @click="update"></q-btn>
 
       </q-toolbar>
     </q-header>
@@ -95,31 +95,44 @@
 
     <q-page-container>
       <router-view />
-      <div class="q-pa-md row items-start q-gutter-md">
-        <!--商店基本信息-->
-        <div class="q-pa-ma" style="width:100%;">
-          <div style="width:300px;">
-            <!-- <q-img :src="url" style="border: 50%; left:50px" /> -->
-            <div class="text-h4 q-mt-sm q-mb-xs" style="margin-left:3%; height:50px"> 店铺名称：{{ shopName }}</div>
-            <div>
-              <q-separator />
-            </div>
-            <div class="text-caption text-grey" style="margin-left:3%; margin-top: 3%;">
-              店铺介绍：{{ shopIntroduce }}
-            </div>
-            <div class="col-auto text-grey text-h6 q-pt-md row no-wrap items-center" style="margin-left:3%; ">
-              <q-icon name="place" />
-              店铺地址：{{ shopAddress }}
-            </div>
-            <div class="text-grey text-h6" style="margin-left:3%; ">
-              <q-icon name="alarm" />
-              注册时间：{{ shopRegistrationTime }}
-            </div>
-          </div>
+      <div class="q-pa-md row items-start q-gutter-md" style="width: 100%;">
+
+        <div class="shopInfoDisplay" style="width: 30%; margin-top: 3%;">
+          <q-card class="my-card" flat bordered>
+            <q-card-section>
+              <div class="text-overline text-orange-9">注册时间：{{ shopRegistrationTime }}</div>
+              <div class="text-h5 q-mt-sm q-mb-xs">店铺名称：{{ shopName }}</div>
+              <div class="text-overline text-grey "><q-icon name="place" />
+                {{ shopAddress }}</div>
+              <div class="text-caption text-grey">简介：{{ shopIntroduce }}</div>
+            </q-card-section>
+            
+            <q-card-actions>
+              <!-- <div class="cursor-pointer" style="width: 100px; margin-left: 10%;">
+              充值
+              <q-popup-edit v-model="label" auto-save>
+                <q-input v-model="money" hint="请输入充值金额" dense autofocus counter @keyup.enter="topUpAccount" />
+              </q-popup-edit>
+            </div> -->
+              <q-btn flat color="secondary" label="下拉查看流水" style="margin-left: 0.5%;" />
+
+              <q-space />
+
+              <q-btn color="grey" round flat dense :icon="transferExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                @click="transferExpanded = !transferExpanded" />
+            </q-card-actions>
+
+            <q-slide-transition>
+              <div v-show="transferExpanded">
+                <q-table :rows="transitionRows" :columns="transitionColumn" row-key="transferName"
+                  style="margin-top: 2%; margin-left: 1%;" />
+              </div>
+            </q-slide-transition>
+          </q-card>
         </div>
 
         <!--商店商品展示-->
-        <div class="q-pa-ma" style="width: 100%;">
+        <div class="q-pa-ma" style="width: 65%;">
           <div>
             <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
               narrow-indicator>
@@ -258,7 +271,7 @@
 
                             <div class="row no-wrap items-center">
                               <div class="col text-h6 ellipsis">
-                                <q-btn flat class="text-h6" >
+                                <q-btn flat class="text-h6">
                                   {{ commodity.goodsName }}
                                 </q-btn>
                               </div>
@@ -470,7 +483,6 @@ import axios from 'axios'
 import { onMounted } from 'vue'
 
 const store = useStore()
-const shopId = 1;
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
@@ -482,11 +494,11 @@ const links1 = [
   { icon: 'star_border', text: '资金信息' }
 ]
 
-const tab = ref("Commodity")
-const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
+const tab = ref('onShelve')
 const accept = ref(false)
 const layout = ref(false)
 const layout_delete = ref(false)
+const shopId = store.state.shopId
 let editCommodity = ref(false)
 let viewOnly = ref(true)
 
@@ -514,11 +526,20 @@ let editComImage = ref(null)
 let editComStatus = ref(null)
 const shops = ref([])
 const code = ref(null)
+let transferExpanded = ref(false)
 
 // 商品展示（分类数组）
 let onShelveCmdt = ref([])
 let removedCmdt = ref([])
 let applyingCmdt = ref([])
+
+// 流水
+let transitionColumn = [
+  { name: 'transferName', label: '转账人', field: 'transferName' },
+  { name: 'receiveName', label: '收款人', field: 'receiveName' },
+  { name: 'amount', label: '金额（¥）', field: 'amount' },
+]
+let transitionRows = ref([])
 
 
 const shopName = computed(() => {
@@ -546,6 +567,15 @@ const myForm = ref(null);
 // leftDrawerOpen.value = !leftDrawerOpen.value
 // }
 
+function update() {
+  getShelvedCommodities()
+  getApplication()
+  getRemovedCommodities()
+  getTransition()
+
+  instance.proxy.$forceUpdate();
+}
+
 function checkprice(price) {
   if (isNaN(price)) {
     return false;
@@ -556,6 +586,7 @@ function checkprice(price) {
   return true; // 输入值合法
 }
 
+//下架商品
 function deleteCommodity(commodity) {
   console.log('delete commodity parameter: ', commodity.id)
   axiosInstance.put('/Goods/remove',
@@ -568,58 +599,10 @@ function deleteCommodity(commodity) {
       }
     }).then((response) => {
       console.log('下架商品：', response)
-    });
-}
-
-//下架商品
-function deleteOneCommodity() {
-  axiosInstance.put('/Goods/remove',
-    {
-      goodsId: delete_id.value
-    },
-    {
-      params: {
-        goodsId: delete_id.value
-      }
-    }).then((response) => {
-      console.log("下架商品")
-      const r = response.data['data']
-      console.log(r)
-      layout_delete.value = false
-
       update()
     });
 }
 
-function update() {
-  //显示该店铺的信息
-  axiosInstance.get('/shop/showShopByShopId', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    const [year, month, day] = r.registrationTime;
-    r.registrationTime = `${year}-${month}-${day}`;
-    console.log('shop message')
-    shops.value = r
-    console.log(shops.value)
-  });
-
-  //显示该店铺的所有上架成功的商品
-  axiosInstance.get('/Goods/showAddRecord_1', {
-    params: {
-      shopId: 1
-    }
-  }).then((response) => {
-    const r = response.data['data']
-    console.log('showAddRecord_1')
-    onShelveCmdt.value = r
-    console.log('获取在售商品：', onShelveCmdt.value)
-  });
-
-  instance.proxy.$forceUpdate();
-}
 
 // 提交上架商品的表单
 function onSubmit() {
@@ -629,12 +612,12 @@ function onSubmit() {
         goodsName: goodsName.value,
         description: description.value,
         price: price.value,
-        shopId: 1,
+        shopId: shopId,
         image: image.value
       },
       {
         params: {
-          shopId: 1
+          shopId: shopId
         }
       }
     )
@@ -648,6 +631,7 @@ function onSubmit() {
         layout.value = false;
         console.log('layout');
         console.log(layout.value);
+        update()
         onReset()
       }
       console.log(response.data);
@@ -681,63 +665,23 @@ function handleUpload(event) {
 
 onMounted(() => {
   //显示该店铺的信息
-  // axiosInstance.get('/shop/showAddRecord_1', {
-  //   params: {
-  //     shopId: shopId
-  //   }
-  // }).then((response) => {
-  //   const r = response.data['data']
-  //   const [year, month, day] = r.registrationTime;
-  //   r.registrationTime = `${year}-${month}-${day}`;
-  //   console.log('shop message')
-  //   shops.value = r
-  //   console.log(shops.value)
-  // });
+  axiosInstance.get('/shop/showShopByShopId', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    const [year, month, day] = r.registrationTime;
+    r.registrationTime = `${year}-${month}-${day}`;
+    console.log('shop message')
+    shops.value = r
+    console.log(shops.value)
+  });
 
   getShelvedCommodities()
   getApplication()
   getRemovedCommodities()
-
-  // 显示该店铺的所有商品
-  // axiosInstance.get('/Goods/showShopAllGoods', {
-  //   params: {
-  //     shopId: shopId,
-  //   }
-  // }).then((response) => {
-  //   const r = response.data['data']
-  //   console.log('show all comodities of shop ', shopId, ': ', r)
-  //   r.map(obj => {
-  //     switch (obj.status) {
-  //       case 0:
-  //         obj.status = '上架审核中';
-  //         break;
-  //       case 1:
-  //         obj.status = '上架成功';
-  //         break;
-  //       case 2:
-  //         obj.status = '上架失败';
-  //         break;
-  //       case 5:
-  //         obj.status = '已移除';
-  //         break;
-  //       case 7:
-  //         obj.status = '商品详情更新审核中';
-  //         break;
-  //       case 8:
-  //         obj.status = '商品详情更新成功';
-  //         break;
-  //       case 9:
-  //         obj.status = '商品详情更新失败';
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //     return obj;
-  //   });
-  //   commodities.value.splice(0, commodities.value.length, ...r);
-  //   console.log(commodities.value)
-  // });
-
+  getTransition()
 });
 
 function toEditCommodity(commodity) {
@@ -802,6 +746,7 @@ function postCommodityEdit() {
 
 // 获取改店铺的所有已上架商品
 function getShelvedCommodities() {
+  onShelveCmdt = ref([])
   axiosInstance.get('/Goods/showAddRecord_1', {
     params: {
       shopId: shopId
@@ -809,7 +754,6 @@ function getShelvedCommodities() {
   }).then((response) => {
     const r = response.data['data']
     r.forEach(function (item) {
-      // console.log(item.id)
       // item.id is shopId!
       item.status = '在售中'
     });
@@ -831,12 +775,13 @@ function getShelvedCommodities() {
         onShelveCmdt.value.push(item)
       }
     });
-    console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+    // console.log('获取在售商品(record 8)：', onShelveCmdt.value)
   });
 }
 
 // 获取改店铺的所有申请中的商品
 function getApplication() {
+  applyingCmdt = ref([])
   // 上架等待审批
   axiosInstance.get('/Goods/showAddRecord_0', {
     params: {
@@ -852,7 +797,7 @@ function getApplication() {
         applyingCmdt.value.push(item)
       }
     });
-    console.log('获取申请商品(record 0)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 0)：', applyingCmdt.value)
   });
   // 上架失败
   axiosInstance.get('/Goods/showAddRecord_2', {
@@ -872,7 +817,7 @@ function getApplication() {
     // if (r !== []){
     //     applyingCmdt.value.push(r)
     //   }
-    console.log('获取申请商品(record 2)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 2)：', applyingCmdt.value)
   });
   // 修改信息审批中
   axiosInstance.get('/Goods/showUpdateRecord_7', {
@@ -892,7 +837,7 @@ function getApplication() {
     // if (r !== []){
     //     applyingCmdt.value.push(r)
     //   }
-    console.log('获取申请商品(record 7)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 7)：', applyingCmdt.value)
   });
   // 修改信息失败
   axiosInstance.get('/Goods/showUpdateRecord_9', {
@@ -912,12 +857,13 @@ function getApplication() {
     // if (r !== []){
     //     applyingCmdt.value.push(r)
     //   }
-    console.log('获取申请商品(record 9)：', applyingCmdt.value)
+    // console.log('获取申请商品(record 9)：', applyingCmdt.value)
   });
 }
 
 // 获取所有已下架商品
 function getRemovedCommodities() {
+  removedCmdt = ref([])
   axiosInstance.get('/Goods/showDeleteRecord_5', {
     params: {
       shopId: shopId
@@ -935,6 +881,24 @@ function getRemovedCommodities() {
     });
     console.log('获取下架商品(record 5)：', removedCmdt.value)
   });
+}
+
+function getTransition() {
+  console.log('current shopid: ', shopId)
+  axiosInstance.post('/transferRecords/shop', {
+    id:shopId
+  },{
+    params: {
+      id: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get shop transfer records: ', r);
+    r.forEach(function (item) {
+      transitionRows.value.push(item);
+    });
+  });
+  console.log('transition: ', transitionRows.value)
 }
 
 </script>

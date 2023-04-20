@@ -15,7 +15,7 @@
 
     <q-page-container>
       <router-view />
-      <div class="q-pa-md row items-start q-gutter-md">
+      <div class="q-pa-md row items-start q-gutter-md" style="width:100%">
         <!--用户信息展示-->
         <!-- <q-card class="my-card" flat bordered style="width: 280px">
           <q-card-section horizontal>
@@ -44,7 +44,7 @@
           </q-card-actions>
         </q-card> -->
 
-        <div class="q-pa-ma" style="width:400px;">
+        <div class="q-pa-ma" style="width:30%;">
           <div style="width:300px;">
             <q-img :src="url" style="border-radius: 50%; left:50px" />
             <div class="text-h5 q-mt-sm q-mb-xs" style="margin-left:70px"> {{ username }}</div>
@@ -58,7 +58,7 @@
         </div>
 
         <!--购物车商品展示-->
-        <div class="q-pa-ma">
+        <div class="q-pa-ma" style="width:65%">
           <div>
             <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
               narrow-indicator>
@@ -76,26 +76,39 @@
                         style="width: 900px;">
                         <q-card class="shop-card" flat bordered>
                           <q-card-section horizontal>
-                            <q-card-section class="q-pt-xs">
+                            <q-card-section class="q-pt-xs" style="width:60%; height:100%">
                               <div class="text-overline">Overline</div>
-                              <div class="text-h5 q-mt-sm q-mb-xs">{{ commodity.goodsName }}</div>
-                              <div class="text-caption text-grey">
-                                {{ commodity.description }}
+                              <div class="text-h5 q-mt-sm q-mb-xs">{{ commodity.goods.goodsName }}</div>
+                              <div class="text-caption text-grey" style="height:20px">
+                                {{ commodity.goods.description }}
                               </div>
                             </q-card-section>
+                            <q-card-section>
 
-                            <q-card-section class="col-5 flex flex-center">
+                            </q-card-section>
+
+                            <q-card-section class="col-5 flex justify-end">
                               <q-img class="rounded-borders" src="https://cdn.quasar.dev/img/parallax2.jpg" />
                             </q-card-section>
                           </q-card-section>
 
+                          <q-card-section>
+                            <div class="flex">
+                              <q-btn class="decrement" icon="remove" size="xs" @click="decrement(commodity)" />
+                              <div class="justify-center" style="width:30px; display:flex; align-items:center">{{
+                                commodity.cartGoods.goodsQuantity }}</div>
+                              <q-btn class="increment" icon="add" size="xs" @click="increment(commodity)" />
+                            </div>
+                          </q-card-section>
+
                           <q-separator />
+
 
                           <q-card-actions>
                             <q-card-section horizontal>
-                              <q-checkbox v-model="selectedCommodities[commodity.id]" />
+                              <q-checkbox v-model="selectedCommodities[commodity.goods.id]" />
                             </q-card-section>
-                            <q-btn flat color="primary" @click="singel_delete(commodity.id)">
+                            <q-btn flat color="primary" @click="singel_delete(commodity.goods.id)">
                               Delete
                             </q-btn>
                           </q-card-actions>
@@ -122,22 +135,21 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import { useStore } from 'src/store'
 import axios from 'axios'
 import { onMounted } from 'vue'
 
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
 const store = useStore()
-const username = ref('primerL')
+const username = store.state.username
 const tab = ref("Commodity")
-const expanded = ref(false)
-const shoppingCartNumber = ref(1)
+const instance = getCurrentInstance()
+
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
-const shops = ref([])
 
 const commodities = ref([])
 
@@ -145,25 +157,62 @@ const selectedCommodities = ref([]) // 存储选中的商品
 
 function batch_delete() {
   console.log(selectedCommodities.value)
+  const selectedCommodityIds = Object.keys(selectedCommodities.value).map(Number);
+  axiosInstance.delete(`/cart/deleteMulti?goodsIdList=${selectedCommodityIds}&userId=${store.state.userId}`).then((res) => {
+      console.log("batch")
+      console.log(res.data)
+      update()
+    });
 }
 
-function singel_delete(id) {
-  console.log(id)
+function decrement(commodity) {
+  console.log("decrement")
+  console.log(commodity)
+  axiosInstance.put(`/cart/deleteSingle?goodsId=${commodity.goods.id}&userId=${store.state.userId}`).then((res) => {
+      console.log("cart")
+      console.log(res.data)
+      update()
+    });
 }
 
+function increment(commodity) {
+  console.log("increment")
+  console.log(commodity)
+  axiosInstance.post(`/cart/add2cart?goodsId=${commodity.goods.id}&userId=${store.state.userId}`).then((res) => {
+      console.log("cart")
+      console.log(res.data)
+      update()
+    });
+
+}
+
+function update() {
+  axiosInstance.get('/cart/showList',
+    {
+      params: {
+        userId: store.state.userId
+      }
+    }).then((res) => {
+      console.log("update")
+      console.log(res.data.data)
+      commodities.value = res.data.data
+    });
+
+    instance.proxy.$forceUpdate();
+}
 
 onMounted(() => {
   //userId全局变量
   axiosInstance.get('/cart/showList',
-  {
-    params:{
-      userId:1
-    }
-  }).then((res)=>{
-    console.log("res")
-    console.log(res.data)
-    commodities.value = res.data.data
-  });
+    {
+      params: {
+        userId: store.state.userId
+      }
+    }).then((res) => {
+      console.log("res")
+      console.log(res.data.data)
+      commodities.value = res.data.data
+    });
 });
 </script>
 
@@ -172,6 +221,6 @@ onMounted(() => {
   width: 100%
   width: 700px
   height: 100%
-  max-height: 300px
+  max-height: 310px
 
 </style>
