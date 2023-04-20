@@ -345,7 +345,7 @@
 
         <!--上架商品-->
         <div>
-          <q-btn round color="purple" icon="add" class="absolute" @click="layout = true"
+          <q-btn round color="purple" icon="add" class="absolute" @click="applyAddCommodity()"
             style="top: 600px; right: 50px; transform: translateY(-50%);" size="30px">
           </q-btn>
           <q-dialog v-model="layout" no-click-outside-close>
@@ -384,8 +384,6 @@
                       label="Restricted to images" multiple @uploading="onFileUploading" accept="image/*"
                       Content-Type='multipart/form-data' :auto-upload="false" @uploaded="handleUpload($event)"
                       @rejected="onRejected" />
-
-                    <q-toggle v-model="accept" label="我同意隐私条款" />
 
                     <div class="submit">
                       <q-btn label="Submit" type="submit" color="red-4" />
@@ -495,7 +493,6 @@ const links1 = [
 ]
 
 const tab = ref('onShelve')
-const accept = ref(false)
 const layout = ref(false)
 const layout_delete = ref(false)
 const shopId = store.state.shopId
@@ -698,6 +695,14 @@ function toEditCommodity(commodity) {
 function viewEditModeChange() {
   viewOnly.value = !viewOnly.value
   console.log('view mode: ', viewOnly.value)
+}
+
+function applyAddCommodity() {
+  layout.value = true
+  goodsName.value = null
+  description.value = null
+  price.value = null
+  image.value = []
 }
 
 function postCommodityEdit() {
