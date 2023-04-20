@@ -541,6 +541,8 @@ export default {
   mounted() {
     this.q = useQuasar();
     this.preRef = this.$refs.preBox;
+    const store = useStore()
+    store.commit('setUserId', 0);
   },
 };
 </script>

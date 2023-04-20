@@ -224,11 +224,11 @@ function toShop(id) {
 }
 
 onMounted(() => {
-  //请求所有已批准的店铺
+  //请求所有已批准开店的店铺status=1
   axiosInstance.post('/shop/showByStatus1_4').then((res) => {
     console.log("店铺")
     console.log(res.data.data)
-    shops.value = res.data.data
+    shops.value = res.data.data.filter(obj => obj.status !== 4);
   });
 
   //请求所有商品信息

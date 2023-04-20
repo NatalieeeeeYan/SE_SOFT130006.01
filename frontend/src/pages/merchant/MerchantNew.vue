@@ -584,6 +584,7 @@ function onSubmit() {
       layout.value = false;
       console.log('layout');
       console.log(layout.value);
+      update()
     }
     console.log(response.data);
     //myForm.value.resetValidation();

@@ -70,7 +70,7 @@
             <q-tab-panels v-model="tab" animated>
               <q-tab-panel name="Commodity">
                 <div class="flex justify-center">
-                  <q-scroll-area :visible="visible" style="height: 620px; width: 900px;" class="flex justify-center">
+                  <q-scroll-area :visible="visible" style="height: 650px; width: 900px;" class="flex justify-center">
                     <div class="flex q-justify-around" style="width: 900px;">
                       <div v-for="commodity in commodities" :key="commodity" class="flex q-py-xs justify-around"
                         style="width: 900px;">
@@ -88,7 +88,7 @@
                             </q-card-section>
 
                             <q-card-section class="col-5 flex justify-end">
-                              <q-img class="rounded-borders" src="https://cdn.quasar.dev/img/parallax2.jpg" />
+                              <q-img class="rounded-borders" :src="commodity.goods.image[0]"  style="width:200px; height:150px"></q-img>
                             </q-card-section>
                           </q-card-section>
 

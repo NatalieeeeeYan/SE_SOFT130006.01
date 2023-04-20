@@ -11,7 +11,7 @@
           </q-avatar>
           首页
         </q-toolbar-title>
-        <q-btn flat round dense icon="update" class="q-mr-xs" @click="updata"></q-btn>
+        <q-btn flat round dense icon="update" class="q-mr-xs" @click="update"></q-btn>
 
         <q-btn-dropdown class="glossy" color="dark" label="账户设置">
           <div class="row no-wrap q-pa-md">
@@ -171,7 +171,7 @@
                 </q-card>
             </div>
           </div>
-          
+
         </div>
 
         <div class="approvedApps" v-if="showApprovedApps">
@@ -390,7 +390,7 @@
 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import axios from 'axios'
 import { onMounted } from 'vue'
 import { useQuasar } from 'quasar'
@@ -580,6 +580,7 @@ let TransitionColumn = [
 ]
 let intermediateAccountTrans = ref([])
 let profitAccountTrans = ref([])
+const instance = getCurrentInstance()
 
 onMounted(() => {
   // 获取所有待审批的商店信息：开店/闭店
@@ -811,8 +812,10 @@ function getTransfer() {
       } else if (item['receiveName'] === 'admin_profit') {
         profitAccountTrans.value.push(item)
       }
-    });
-  });
+    }
+    );
+  }
+  );
 }
 
 // 同意申请
@@ -886,6 +889,7 @@ function disapproveApplication(rcShopAppRow) {
     }).then((response) => {
       const r = response.data['data']
       console.log('开店申请response data: ', r);
+      update()
     }).catch((error) => {
       console.error('Error:', error);
       // 处理错误
@@ -899,6 +903,7 @@ function disapproveApplication(rcShopAppRow) {
       userId: rcShopAppRow.userId,
     }).then((response) => {
       const r = response.data['data']
+      update()
       console.log(r);
     }).catch((error) => {
       console.error('Error:', error);
@@ -965,20 +970,9 @@ function disapproveCommodityEdit(good) {
 }
 
 // 刷新button事件
-function updata() {
-  let aShopAppRows = ref([])
-  let rShopAppRows = ref([])
-  let rcShopAppRows = ref([])
-
-  let aCommodityUpApp = ref([])
-  let aCommodityEditApp = ref([])
-
-  let rCommodityUpApp = ref([])
-  let rCommodityEditApp = ref([])
-
-  let rcCommodityUpApp = ref([])
-  let rcCommodityEditApp = ref([])
-  axiosInstance.post('/shop/showByStatus0_3').then((response) => {
+function update() {
+    // 获取所有待审批的商店信息：开店/闭店
+    axiosInstance.post('/shop/showByStatus0_3').then((response) => {
     const r = response.data['data']
     console.log('get rc shop msg: ', r);
     r.forEach(function (item) {
@@ -1155,6 +1149,8 @@ function updata() {
     profitAccount.value = r
   });
   getTransfer()
+
+  instance.proxy.$forceUpdate();
 }
 
 function toggleLeftDrawer() {
@@ -1164,12 +1160,6 @@ function toggleLeftDrawer() {
 // 深色模式
 function toggle() {
   q.dark.toggle();
-}
-
-
-// ？
-function getSelectedString() {
-  return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${rows.value.length}`
 }
 </script>
 
