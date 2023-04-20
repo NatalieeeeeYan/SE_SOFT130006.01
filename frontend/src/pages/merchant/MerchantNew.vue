@@ -147,7 +147,7 @@
 
                                 <q-card-actions>
                                   <!-- <q-btn icon="delete" @click="deleteShop(shop)" /> -->
-                                  <q-btn push icon="delete" @click="deleteShop(shop)" >
+                                  <q-btn push icon="delete" @click="deleteShop(shop)">
                                     <q-popup-proxy>
                                       <q-banner>
                                         <template v-slot:avatar>
@@ -269,7 +269,7 @@
 
         <!--申请开店-->
         <div>
-          <q-btn round color="primary" icon="add" class="absolute" @click="layout = true"
+          <q-btn round color="primary" icon="add" class="absolute" @click="applyAddShop()"
             style="top: 600px; right: 50px; transform: translateY(-50%);" size="30px">
           </q-btn>
           <q-dialog v-model="layout" no-click-outside-close>
@@ -412,6 +412,11 @@ let allShops = ref([])
 let openingShops = ref([])
 let applyingShops = ref([])
 let closedShops = ref([])
+
+// 申请开店表单初始化
+function applyAddShop() {
+  layout.value = true
+}
 
 //跳转到单个店铺
 function toShop(id) {

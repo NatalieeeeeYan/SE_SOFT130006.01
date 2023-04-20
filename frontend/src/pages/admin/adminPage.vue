@@ -101,12 +101,12 @@
           <q-separator style="width: 100%; margin-top: 3%;" />
 
           <p style="font-size: large; margin-top: 2%; margin-left: 2%;">待批准的商品申请</p>
-
           <div class="flex q-justify-around" style="width:800px">
             <!-- 待审批的上架申请 -->
+
             <div v-for="commodity in rcCommodityUpApp" :key="commodity" class="flex q-py-xs"
-              style="width: 350px; max-width:40%">
-              <q-card class="edit-commodity-card" style="width: 40%;">
+              style="width: 400px;">
+              <q-card class="edit-commodity-card" style="width: 350px;">
                 <div class="q-pa-md">
                   <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
                     infinite>
@@ -137,42 +137,41 @@
               </q-card>
               <q-separator />
             </div>
+
             <!-- 待审批的修改信息申请 -->
+              <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+                style="width: 400px">
+                <q-card class="edit-commodity-card" style="width: 350px;">
+                  <div class="q-pa-md">
+                    <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px"
+                      thumbnails infinite>
+                      <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                        :img-src="image" />
+                    </q-carousel>
+                  </div>
 
-            <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
-              style="width: 400px">
-              <q-card class="edit-commodity-card" style="width: 350px;">
-                <div class="q-pa-md">
-                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                    infinite>
-                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
-                      :img-src="image" />
-                  </q-carousel>
-                </div>
-
-                <q-card-section>
-                  <div class="row no-wrap items-center">
-                    <div class="col text-h6 ellipsis">
-                      {{ commodity.goodsName }}
+                  <q-card-section>
+                    <div class="row no-wrap items-center">
+                      <div class="col text-h6 ellipsis">
+                        {{ commodity.goodsName }}
+                      </div>
                     </div>
-                  </div>
-                  <div class="text-subtitle1">
-                    ¥ price: {{ commodity.price }}
-                  </div>
-                  <div class="text-caption text-grey">
-                    {{ commodity.description }}
-                  </div>
-                </q-card-section>
+                    <div class="text-subtitle1">
+                      ¥ price: {{ commodity.price }}
+                    </div>
+                    <div class="text-caption text-grey">
+                      {{ commodity.description }}
+                    </div>
+                  </q-card-section>
 
-                <q-card-actions>
-                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity)" />
-                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity)" />
-                </q-card-actions>
-              </q-card>
+                  <q-card-actions>
+                    <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity)" />
+                    <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity)" />
+                  </q-card-actions>
+                </q-card>
             </div>
-
           </div>
-
+          
         </div>
 
         <div class="approvedApps" v-if="showApprovedApps">
@@ -676,7 +675,7 @@ onMounted(() => {
     console.log('get 待审批上架商品 msg: ', r);
     r.forEach(function (item) {
       if (item !== null) {
-        rcCommodityEditApp.value.push(item)
+        rcCommodityUpApp.value.push(item)
       }
     });
     console.log("申请待审批上架商品后：", rcCommodityUpApp.value)
@@ -1071,7 +1070,7 @@ function updata() {
     console.log('get 待审批上架商品 msg: ', r);
     r.forEach(function (item) {
       if (item !== null) {
-        rcCommodityEditApp.value.push(item)
+        rcCommodityUpApp.value.push(item)
       }
     });
     console.log("申请待审批上架商品后：", rcCommodityUpApp.value)

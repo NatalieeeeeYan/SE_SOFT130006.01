@@ -345,7 +345,7 @@
 
         <!--上架商品-->
         <div>
-          <q-btn round color="purple" icon="add" class="absolute" @click="layout = true"
+          <q-btn round color="purple" icon="add" class="absolute" @click="applyAddCommodity()"
             style="top: 600px; right: 50px; transform: translateY(-50%);" size="30px">
           </q-btn>
           <q-dialog v-model="layout" no-click-outside-close>
@@ -384,8 +384,6 @@
                       label="Restricted to images" multiple @uploading="onFileUploading" accept="image/*"
                       Content-Type='multipart/form-data' :auto-upload="false" @uploaded="handleUpload($event)"
                       @rejected="onRejected" />
-
-                    <q-toggle v-model="accept" label="我同意隐私条款" />
 
                     <div class="submit">
                       <q-btn label="Submit" type="submit" color="red-4" />
@@ -495,7 +493,6 @@ const links1 = [
 ]
 
 const tab = ref('onShelve')
-const accept = ref(false)
 const layout = ref(false)
 const layout_delete = ref(false)
 const shopId = store.state.shopId
@@ -572,7 +569,6 @@ function update() {
   getApplication()
   getRemovedCommodities()
   getTransition()
-
   instance.proxy.$forceUpdate();
 }
 
@@ -701,6 +697,14 @@ function viewEditModeChange() {
   console.log('view mode: ', viewOnly.value)
 }
 
+function applyAddCommodity() {
+  layout.value = true
+  goodsName.value = null
+  description.value = null
+  price.value = null
+  image.value = []
+}
+
 function postCommodityEdit() {
   console.log("post edit commodity: \ngoods id: ", editComId.value,
     "\ngoods name: ", editComName.value,
@@ -775,11 +779,26 @@ function getShelvedCommodities() {
         onShelveCmdt.value.push(item)
       }
     });
-    // console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+  });
+  // 修改信息失败也是上架商品
+  axiosInstance.get('/Goods/showUpdateRecord_9', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '在售中（修改信息失败）'
+        onShelveCmdt.value.push(item)
+      }
+    });
   });
 }
 
-// 获取改店铺的所有申请中的商品
+// 获取改店铺的所有申请中 & 申请失败的商品
 function getApplication() {
   applyingCmdt = ref([])
   // 上架等待审批
