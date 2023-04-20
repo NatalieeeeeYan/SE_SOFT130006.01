@@ -38,6 +38,9 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     @Override
     public Result<?> deleteSingle(Integer userId, Integer goodsId){
         Integer cartId=cartMapper.getCartByUserId(userId);
+        if(cartGoodsMapper.getQuantity(cartId,goodsId)==1){
+            cartGoodsMapper.deleteBatch(cartId,goodsId);
+        }
         cartGoodsMapper.updateQuantity(cartId,goodsId,-1);
         return Result.success("移除商品成功");
     }
