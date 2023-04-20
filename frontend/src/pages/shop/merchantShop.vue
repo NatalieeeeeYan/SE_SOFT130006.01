@@ -572,7 +572,6 @@ function update() {
   getApplication()
   getRemovedCommodities()
   getTransition()
-
   instance.proxy.$forceUpdate();
 }
 
@@ -775,11 +774,26 @@ function getShelvedCommodities() {
         onShelveCmdt.value.push(item)
       }
     });
-    // console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+  });
+  // 修改信息失败也是上架商品
+  axiosInstance.get('/Goods/showUpdateRecord_9', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '在售中（修改信息失败）'
+        onShelveCmdt.value.push(item)
+      }
+    });
   });
 }
 
-// 获取改店铺的所有申请中的商品
+// 获取改店铺的所有申请中 & 申请失败的商品
 function getApplication() {
   applyingCmdt = ref([])
   // 上架等待审批
