@@ -30,5 +30,8 @@
         SELECT COUNT(*) FROM ss_cart_goods
         WHERE goods_id = #{goodsId}
     </select>
-
+    <select id="getQuantity" resultType="java.lang.Integer">
+        SELECT goods_quantity FROM ss_cart_goods
+        WHERE cart_id = #{cartId} AND goods_id = #{goodsId}
+    </select>
 </mapper>
