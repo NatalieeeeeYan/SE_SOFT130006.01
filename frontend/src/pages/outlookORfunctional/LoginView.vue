@@ -260,7 +260,6 @@ export default {
     const myForm = ref(null);
     const nameField = ref(null);
     const name_merchant_r = ref(null);
-    const name_consumer_r = ref(null);
     const consumer_r = ref(null)
 
     const name_r = ref(null);

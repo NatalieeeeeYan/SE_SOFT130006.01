@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     // 登录页面
+    name : 'login',
     path: '/login',
     component: () => import('src/pages/outlookORfunctional/LoginView.vue'),
   },
@@ -17,6 +18,7 @@ const routes: RouteRecordRaw[] = [
     // 商户主页面
     path: '/merchantpage',
     component: () => import('src/pages/merchant/MerchantNew.vue'),
+    meta: { requiresAuth: true } // 添加 requiresAuth 属性
   },
 
   {
@@ -30,6 +32,7 @@ const routes: RouteRecordRaw[] = [
     // 用户主页面
     path: '/user',
     component: () => import('src/pages/user/UserPage.vue'),
+    meta: { requiresAuth: true } // 添加 requiresAuth 属性
   },
   {
     // 用户购物车页面
