@@ -101,47 +101,11 @@
           <q-separator style="width: 100%; margin-top: 3%;" />
 
           <p style="font-size: large; margin-top: 2%; margin-left: 2%;">待批准的商品申请</p>
-
           <div class="flex q-justify-around" style="width:800px">
             <!-- 待审批的上架申请 -->
+
             <div v-for="commodity in rcCommodityUpApp" :key="commodity" class="flex q-py-xs"
-              style="width: 350px; max-width:40%">
-              <q-card class="edit-commodity-card" style="width: 40%;">
-                <div class="q-pa-md">
-                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
-                    infinite>
-                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
-                      :img-src="image" />
-                  </q-carousel>
-                </div>
-
-
-                <q-card-section>
-                  <div class="row no-wrap items-center">
-                    <div class="col text-h6 ellipsis">
-                      {{ commodity.goodsName }}
-                    </div>
-                  </div>
-                  <div class="text-subtitle1">
-                    ¥ price: {{ commodity.price }}
-                  </div>
-                  <div class="text-caption text-grey">
-                    {{ commodity.description }}
-                  </div>
-                </q-card-section>
-
-                <q-card-actions>
-                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity.id)" />
-                  <q-btn color="negative" class="q-mx-auto" icon="clear"
-                    @click="disapproveCommodityUpdate(commodity.id)" />
-                </q-card-actions>
-              </q-card>
-              <q-separator />
-            </div>
-            <!-- 待审批的修改信息申请 -->
-
-            <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
-              style="width: 400px">
+              style="width: 400px;">
               <q-card class="edit-commodity-card" style="width: 350px;">
                 <div class="q-pa-md">
                   <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
@@ -151,6 +115,7 @@
                   </q-carousel>
                 </div>
 
+
                 <q-card-section>
                   <div class="row no-wrap items-center">
                     <div class="col text-h6 ellipsis">
@@ -166,14 +131,47 @@
                 </q-card-section>
 
                 <q-card-actions>
-                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity.id)" />
-                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity.id)" />
+                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity)" />
+                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityUpdate(commodity)" />
                 </q-card-actions>
               </q-card>
+              <q-separator />
             </div>
 
-          </div>
+            <!-- 待审批的修改信息申请 -->
+              <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+                style="width: 400px">
+                <q-card class="edit-commodity-card" style="width: 350px;">
+                  <div class="q-pa-md">
+                    <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px"
+                      thumbnails infinite>
+                      <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                        :img-src="image" />
+                    </q-carousel>
+                  </div>
 
+                  <q-card-section>
+                    <div class="row no-wrap items-center">
+                      <div class="col text-h6 ellipsis">
+                        {{ commodity.goodsName }}
+                      </div>
+                    </div>
+                    <div class="text-subtitle1">
+                      ¥ price: {{ commodity.price }}
+                    </div>
+                    <div class="text-caption text-grey">
+                      {{ commodity.description }}
+                    </div>
+                  </q-card-section>
+
+                  <q-card-actions>
+                    <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity)" />
+                    <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity)" />
+                  </q-card-actions>
+                </q-card>
+            </div>
+          </div>
+          
         </div>
 
         <div class="approvedApps" v-if="showApprovedApps">
@@ -677,7 +675,7 @@ onMounted(() => {
     console.log('get 待审批上架商品 msg: ', r);
     r.forEach(function (item) {
       if (item !== null) {
-        rcCommodityEditApp.value.push(item)
+        rcCommodityUpApp.value.push(item)
       }
     });
     console.log("申请待审批上架商品后：", rcCommodityUpApp.value)
@@ -800,15 +798,6 @@ function selectRejected() {
   showRemainCheckedApps.value = false
 }
 
-// function getShopName(shopId) {
-//   axiosInstance.get('/shop/showShopByShopId', {
-//     shopId: shopId,
-//   }).then((response) => {
-//     const r = response.data['data']
-//     console.log('get shop name: ', r);
-//   });
-// }
-
 function getTransfer() {
   axiosInstance.post('/transferRecords/admin', {
     // shopId: shopId,
@@ -829,15 +818,15 @@ function getTransfer() {
 // 同意申请
 function approveApplication(rcShopAppRow) {
   // 根据行的id执行同意申请操作
-  console.log('同意申请传参: ', rcShopAppRow)
+  console.log('同意申请传参: shop id: ', rcShopAppRow.shopId, ' user id: ', rcShopAppRow.userId, '  fund: ', rcShopAppRow.fund)
   if (rcShopAppRow.status === '申请开店') {
     axiosInstance.put('/shop/approve', {
-      id: rcShopAppRow.id,
+      id: rcShopAppRow.shopId,
       userId: rcShopAppRow.userId,
       fund: rcShopAppRow.fund,
     }).then((response) => {
       const r = response.data['data']
-      console.log('response data: ', r);
+      console.log('开店申请response data: ', r);
     }).catch((error) => {
       console.error('Error:', error);
       // 处理错误
@@ -846,7 +835,7 @@ function approveApplication(rcShopAppRow) {
   }
   else if (rcShopAppRow.status === '申请闭店') {
     axiosInstance.post('/shop/approveDelete', {
-      id: rcShopAppRow.id,
+      id: rcShopAppRow.shopId,
       account: rcShopAppRow.account,
       userId: rcShopAppRow.userId,
     }).then((response) => {
@@ -891,12 +880,12 @@ function disapproveApplication(rcShopAppRow) {
   console.log('拒绝申请传参: ', rcShopAppRow)
   if (rcShopAppRow.status === '申请开店') {
     axiosInstance.put('/shop/disapprove', {
-      id: rcShopAppRow.id,
+      id: rcShopAppRow.shopId,
       userId: rcShopAppRow.userId,
       fund: rcShopAppRow.fund,
     }).then((response) => {
       const r = response.data['data']
-      console.log('response data: ', r);
+      console.log('开店申请response data: ', r);
     }).catch((error) => {
       console.error('Error:', error);
       // 处理错误
@@ -905,9 +894,9 @@ function disapproveApplication(rcShopAppRow) {
   }
   else if (rcShopAppRow.status === '申请闭店') {
     axiosInstance.post('/shop/disapproveDelete', {
-      id: rcShopAppRow.id,
-      userId: rcShopAppRow.userId,
+      id: rcShopAppRow.shopId,
       account: rcShopAppRow.account,
+      userId: rcShopAppRow.userId,
     }).then((response) => {
       const r = response.data['data']
       console.log(r);
@@ -918,13 +907,13 @@ function disapproveApplication(rcShopAppRow) {
   }
 }
 
-function approveCommodityUpdate(goodId) {
-  console.log('同意商品上架传参：', goodId)
+function approveCommodityUpdate(good) {
+  console.log('同意商品上架传参：', good.id)
   axiosInstance.put('/Goods/addGoodsApprove', {
-    goodsId: goodId,
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -932,13 +921,14 @@ function approveCommodityUpdate(goodId) {
   });
 }
 
+
 function disapproveCommodityUpdate(good) {
   console.log('不同意商品上架传参：', good, '\nid: ', good.id)
-  axiosInstance.put('/Goods/addGoodsApprove', {
-    goodsId: goodId,
+  axiosInstance.put('/Goods/addGoodsReject', {
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -946,13 +936,13 @@ function disapproveCommodityUpdate(good) {
   });
 }
 
-function approveCommodityEdit(goodId) {
-  console.log('同意商品修改传参：', goodId)
+function approveCommodityEdit(good) {
+  console.log('同意商品修改传参：', good.id)
   axiosInstance.put('/Goods/updateGoodsApprove', {
-    goodsId: goodId,
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -960,13 +950,13 @@ function approveCommodityEdit(goodId) {
   });
 }
 
-function disapproveCommodityEdit(goodId) {
-  console.log('不同意商品修改传参：', goodId)
+function disapproveCommodityEdit(good) {
+  console.log('不同意商品修改传参：', good.id)
   axiosInstance.put('/Goods/updateGoodsReject', {
-    goodsId: goodId,
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -975,47 +965,197 @@ function disapproveCommodityEdit(goodId) {
 }
 
 // 刷新button事件
-// function updata() {
-//   axiosInstance.post('/shop/showByStatus0_3').then((response) => {
-//     const r = response.data['data']
-//     r.map(obj => {
-//       const [year, month, day] = obj.registrationTime;
-//       obj.registrationTime = `${year}-${month}-${day}`;
-//       return obj;
-//     });
-//     rows.value.splice(0, rows.value.length, ...r);
-//     console.log(rows.value)
-//   });
-//   instance.proxy.$forceUpdate();
-//   axiosInstance.post('/shop/showByStatus3_4').then((response) => {
-//     const r = response.data['data']
-//     console.log('get delete shop msg: ', r);
-//     r.forEach(function (item) {
-//       // console.log(item.id)
-//       // item.is is shopId!
-//       shopId.value = item.id;
-//       fund.value = r[0]['fund'];
-//     });
-//     r.map(obj => {
-//       const [year, month, day] = obj.registrationTime;
-//       obj.registrationTime = `${year}-${month}-${day}`;
-//       return obj;
-//     });
-//     rows.value.splice(0, rows.value.length, ...r);
-//     console.log(rows.value)
-//   });
-//   instance.proxy.$forceUpdate();
-//   axiosInstance.post('/shop/showByStatus2_5').then((response) => {
-//     const r = response.data['data']
-//     r.map(obj => {
-//       const [year, month, day] = obj.registrationTime;
-//       obj.registrationTime = `${year}-${month}-${day}`;
-//       return obj;
-//     });
-//     rShopAppRows.value.splice(0, rShopAppRows.value.length, ...r);
-//     console.log(rShopAppRows.value)
-//   });
-// }
+function updata() {
+  let aShopAppRows = ref([])
+  let rShopAppRows = ref([])
+  let rcShopAppRows = ref([])
+
+  let aCommodityUpApp = ref([])
+  let aCommodityEditApp = ref([])
+
+  let rCommodityUpApp = ref([])
+  let rCommodityEditApp = ref([])
+
+  let rcCommodityUpApp = ref([])
+  let rcCommodityEditApp = ref([])
+  axiosInstance.post('/shop/showByStatus0_3').then((response) => {
+    const r = response.data['data']
+    console.log('get rc shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 0:
+          obj.status = '申请开店';
+          break;
+        case 3:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    rcShopAppRows.value.splice(0, rcShopAppRows.value.length, ...r);
+    console.log('rc shop value: ', rcShopAppRows.value)
+  });
+
+  // 获取所有通过审批的商店信息：开店/闭店
+  axiosInstance.post('/shop/showByStatus1_4').then((response) => {
+    const r = response.data['data']
+    console.log('get approved shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 1:
+          obj.status = '申请开店';
+          break;
+        case 4:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    aShopAppRows.value.splice(0, aShopAppRows.value.length, ...r);
+    console.log(aShopAppRows.value)
+  });
+
+  // 获取所有已拒绝审批的商店信息：开店/闭店
+  axiosInstance.post('/shop/showByStatus2_5').then((response) => {
+    const r = response.data['data']
+    console.log('get delete shop msg: ', r);
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      item.shopId = item.id;
+      delete item.id
+    });
+    r.map(obj => {
+      const [year, month, day] = obj.registrationTime;
+      obj.registrationTime = `${year}-${month}-${day}`;
+      switch (obj.status) {
+        case 2:
+          obj.status = '申请开店';
+          break;
+        case 5:
+          obj.status = '申请闭店';
+          break;
+        default:
+          break;
+      }
+      return obj;
+    });
+    rShopAppRows.value.splice(0, rShopAppRows.value.length, ...r);
+    console.log(rShopAppRows.value)
+  });
+
+  // 请求所有待审批上架的商品信息
+  axiosInstance.get('/Goods/showAddApply').then((response) => {
+    const r = response.data['data']
+    console.log('get 待审批上架商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rcCommodityUpApp.value.push(item)
+      }
+    });
+    console.log("申请待审批上架商品后：", rcCommodityUpApp.value)
+  });
+
+  // 请求所有待审批修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateApply').then((response) => {
+    const r = response.data['data']
+    console.log('get 待审批修改商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rcCommodityEditApp.value.push(item)
+      }
+    });
+    // rcCommodityEditApp.value.push(0, rcCommodityEditApp.value.length, ...r);
+    console.log("申请待审批修改商品后：", rcCommodityEditApp.value)
+  });
+
+  // 请求所有已通过上架的商品信息
+  axiosInstance.get('/Goods/showAddApproved').then((response) => {
+    const r = response.data['data']
+    console.log('get 已通过上架商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        aCommodityUpApp.value.push(item)
+      }
+    });
+    // aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("已通过上架商品后：", aCommodityUpApp.value)
+  });
+
+  // 请求所有已通过修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateApproved').then((response) => {
+    const r = response.data['data']
+    console.log('get 已通过修改商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        aCommodityUpApp.value.push(item)
+      }
+    });
+    // aCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("申请已通过修改商品后：", aCommodityEditApp.value)
+  });
+
+  // 请求所有已驳回上架的商品信息
+  axiosInstance.get('/Goods/showAddRejected').then((response) => {
+    const r = response.data['data']
+    console.log('get 已驳回上架商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rCommodityUpApp.value.push(item)
+      }
+    });
+    // rCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("已驳回上架商品后：", rCommodityUpApp.value)
+  });
+
+  // 请求所有已驳回修改信息的商品信息
+  axiosInstance.get('/Goods/showUpdateRejected').then((response) => {
+    const r = response.data['data']
+    console.log('get 已驳回修改商品 msg: ', r);
+    r.forEach(function (item) {
+      if (item !== null) {
+        rCommodityUpApp.value.push(item)
+      }
+    });
+    // rCommodityUpApp.value.splice(0, aCommodityUpApp.value.length, ...r);
+    console.log("申请已驳回修改商品后：", rCommodityEditApp.value)
+  });
+
+  // 获取商城中间账号信息
+  axiosInstance.post('/admin/getIntermediateAccount').then((response) => {
+    const r = response.data['data']
+    console.log('get intermediate account msg: ', r);
+    intermediateAccount.value = r
+  });
+
+  // 获取商城利润账户信息
+  axiosInstance.post('/admin/getProfitAccount').then((response) => {
+    const r = response.data['data']
+    console.log('get profile account msg: ', r);
+    profitAccount.value = r
+  });
+  getTransfer()
+}
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value

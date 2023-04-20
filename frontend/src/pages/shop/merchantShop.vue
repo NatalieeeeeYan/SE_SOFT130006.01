@@ -106,7 +106,7 @@
                 {{ shopAddress }}</div>
               <div class="text-caption text-grey">简介：{{ shopIntroduce }}</div>
             </q-card-section>
-
+            
             <q-card-actions>
               <!-- <div class="cursor-pointer" style="width: 100px; margin-left: 10%;">
               充值
@@ -124,7 +124,6 @@
 
             <q-slide-transition>
               <div v-show="transferExpanded">
-                <q-separator />
                 <q-table :rows="transitionRows" :columns="transitionColumn" row-key="transferName"
                   style="margin-top: 2%; margin-left: 1%;" />
               </div>
@@ -527,6 +526,7 @@ let editComImage = ref(null)
 let editComStatus = ref(null)
 const shops = ref([])
 const code = ref(null)
+let transferExpanded = ref(false)
 
 // 商品展示（分类数组）
 let onShelveCmdt = ref([])
@@ -572,7 +572,6 @@ function update() {
   getApplication()
   getRemovedCommodities()
   getTransition()
-
   instance.proxy.$forceUpdate();
 }
 
@@ -746,6 +745,7 @@ function postCommodityEdit() {
 
 // 获取改店铺的所有已上架商品
 function getShelvedCommodities() {
+  onShelveCmdt = ref([])
   axiosInstance.get('/Goods/showAddRecord_1', {
     params: {
       shopId: shopId
@@ -753,12 +753,11 @@ function getShelvedCommodities() {
   }).then((response) => {
     const r = response.data['data']
     r.forEach(function (item) {
-      // console.log(item.id)
       // item.id is shopId!
       item.status = '在售中'
     });
     onShelveCmdt.value = r
-    // console.log('获取在售商品(record 1)：', onShelveCmdt.value)
+    console.log('获取在售商品(record 1)：', onShelveCmdt.value)
   });
   // 修改商品信息成功的案例也算做上架中的商品
   axiosInstance.get('/Goods/showUpdateRecord_8', {
@@ -775,12 +774,28 @@ function getShelvedCommodities() {
         onShelveCmdt.value.push(item)
       }
     });
-    // console.log('获取在售商品(record 8)：', onShelveCmdt.value)
+  });
+  // 修改信息失败也是上架商品
+  axiosInstance.get('/Goods/showUpdateRecord_9', {
+    params: {
+      shopId: shopId
+    }
+  }).then((response) => {
+    const r = response.data['data']
+    r.forEach(function (item) {
+      // console.log(item.id)
+      // item.id is shopId!
+      if (item !== null) {
+        item.status = '在售中（修改信息失败）'
+        onShelveCmdt.value.push(item)
+      }
+    });
   });
 }
 
-// 获取改店铺的所有申请中的商品
+// 获取改店铺的所有申请中 & 申请失败的商品
 function getApplication() {
+  applyingCmdt = ref([])
   // 上架等待审批
   axiosInstance.get('/Goods/showAddRecord_0', {
     params: {
@@ -862,6 +877,7 @@ function getApplication() {
 
 // 获取所有已下架商品
 function getRemovedCommodities() {
+  removedCmdt = ref([])
   axiosInstance.get('/Goods/showDeleteRecord_5', {
     params: {
       shopId: shopId
@@ -896,6 +912,7 @@ function getTransition() {
       transitionRows.value.push(item);
     });
   });
+  console.log('transition: ', transitionRows.value)
 }
 
 </script>

@@ -27,4 +27,6 @@ public interface CartGoodsMapper extends BaseMapper<CartGoods> {
     void deleteAll(Integer cartId);
 
     void setRemoved(Integer cartId);
+
+    Integer getQuantity(Integer cartId, Integer goodsId);
 }
