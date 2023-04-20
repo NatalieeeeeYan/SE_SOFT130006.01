@@ -11,6 +11,7 @@ interface State {
   username: string;
   userId: number;
   shopId: number;
+  token: string | null;
 }
 
 // Provide typings for `this.$store`
@@ -29,6 +30,7 @@ const store = createStore<State>({
       username: '',
       userId: 0,
       shopId: 0,
+      token: null,
     };
   },
   mutations: {
@@ -38,11 +40,20 @@ const store = createStore<State>({
     setUserId(state, userId) {
       state.userId = userId;
     },
-    setShopId(state, shopId){
+    setShopId(state, shopId) {
       state.shopId = shopId;
     },
+    SET_TOKEN(state, token) {
+      state.token = token;
+    },
   },
-});
+  getters: {
+    isAuthenticated: (state) => {
+      return !!state.token && !!state.userId;
+    },
+  },
+
+  });
 
 export default boot(({ app }) => {
   app.use(store, storeKey);

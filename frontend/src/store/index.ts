@@ -28,6 +28,7 @@ export interface StateInterface {
   username: string;
   userId: number;
   shopId: number;
+  token: string | null;
 }
 
 // provide typings for `this.$store`
@@ -53,6 +54,7 @@ export default store(function (/* { ssrContext } */) {
       username: '',
       userId: 0,
       shopId: 0,
+      token: null,
     },
     modules: {
       // example
@@ -67,7 +69,15 @@ export default store(function (/* { ssrContext } */) {
       },
       setShopId(state, shopId) {
         state.shopId = shopId;
+      },
+      SET_TOKEN(state, token) {
+        state.token = token;
       }
+    },
+    getters: {
+      isAuthenticated: (state) => {
+        return !!state.token && !!state.userId;
+      },
     },
 
     // enable strict mode (adds overhead!)
