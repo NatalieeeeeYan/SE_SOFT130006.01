@@ -131,9 +131,9 @@
                 </q-card-section>
 
                 <q-card-actions>
-                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity.id)" />
+                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity)" />
                   <q-btn color="negative" class="q-mx-auto" icon="clear"
-                    @click="disapproveCommodityUpdate(commodity.id)" />
+                    @click="disapproveCommodityUpdate(commodity)" />
                 </q-card-actions>
               </q-card>
               <q-separator />
@@ -166,8 +166,8 @@
                 </q-card-section>
 
                 <q-card-actions>
-                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity.id)" />
-                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity.id)" />
+                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity)" />
+                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity)" />
                 </q-card-actions>
               </q-card>
             </div>
@@ -829,15 +829,15 @@ function getTransfer() {
 // 同意申请
 function approveApplication(rcShopAppRow) {
   // 根据行的id执行同意申请操作
-  console.log('同意申请传参: ', rcShopAppRow)
+  console.log('同意申请传参: shop id: ', rcShopAppRow.shopId, ' user id: ', rcShopAppRow.userId, '  fund: ', rcShopAppRow.fund)
   if (rcShopAppRow.status === '申请开店') {
     axiosInstance.put('/shop/approve', {
-      id: rcShopAppRow.id,
+      id: rcShopAppRow.shopId,
       userId: rcShopAppRow.userId,
       fund: rcShopAppRow.fund,
     }).then((response) => {
       const r = response.data['data']
-      console.log('response data: ', r);
+      console.log('开店申请response data: ', r);
     }).catch((error) => {
       console.error('Error:', error);
       // 处理错误
@@ -846,7 +846,7 @@ function approveApplication(rcShopAppRow) {
   }
   else if (rcShopAppRow.status === '申请闭店') {
     axiosInstance.post('/shop/approveDelete', {
-      id: rcShopAppRow.id,
+      id: rcShopAppRow.shopId,
       account: rcShopAppRow.account,
       userId: rcShopAppRow.userId,
     }).then((response) => {
@@ -891,12 +891,12 @@ function disapproveApplication(rcShopAppRow) {
   console.log('拒绝申请传参: ', rcShopAppRow)
   if (rcShopAppRow.status === '申请开店') {
     axiosInstance.put('/shop/disapprove', {
-      id: rcShopAppRow.id,
+      id: rcShopAppRow.shopId,
       userId: rcShopAppRow.userId,
       fund: rcShopAppRow.fund,
     }).then((response) => {
       const r = response.data['data']
-      console.log('response data: ', r);
+      console.log('开店申请response data: ', r);
     }).catch((error) => {
       console.error('Error:', error);
       // 处理错误
@@ -905,9 +905,9 @@ function disapproveApplication(rcShopAppRow) {
   }
   else if (rcShopAppRow.status === '申请闭店') {
     axiosInstance.post('/shop/disapproveDelete', {
-      id: rcShopAppRow.id,
-      userId: rcShopAppRow.userId,
+      id: rcShopAppRow.shopId,
       account: rcShopAppRow.account,
+      userId: rcShopAppRow.userId,
     }).then((response) => {
       const r = response.data['data']
       console.log(r);
@@ -918,13 +918,13 @@ function disapproveApplication(rcShopAppRow) {
   }
 }
 
-function approveCommodityUpdate(goodId) {
-  console.log('同意商品上架传参：', goodId)
+function approveCommodityUpdate(good) {
+  console.log('同意商品上架传参：', good.id)
   axiosInstance.put('/Goods/addGoodsApprove', {
-    goodsId: goodId,
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -932,13 +932,14 @@ function approveCommodityUpdate(goodId) {
   });
 }
 
+
 function disapproveCommodityUpdate(good) {
   console.log('不同意商品上架传参：', good, '\nid: ', good.id)
-  axiosInstance.put('/Goods/addGoodsApprove', {
-    goodsId: goodId,
+  axiosInstance.put('/Goods/addGoodsReject', {
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -946,13 +947,13 @@ function disapproveCommodityUpdate(good) {
   });
 }
 
-function approveCommodityEdit(goodId) {
-  console.log('同意商品修改传参：', goodId)
+function approveCommodityEdit(good) {
+  console.log('同意商品修改传参：', good.id)
   axiosInstance.put('/Goods/updateGoodsApprove', {
-    goodsId: goodId,
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']
@@ -960,13 +961,13 @@ function approveCommodityEdit(goodId) {
   });
 }
 
-function disapproveCommodityEdit(goodId) {
-  console.log('不同意商品修改传参：', goodId)
+function disapproveCommodityEdit(good) {
+  console.log('不同意商品修改传参：', good.id)
   axiosInstance.put('/Goods/updateGoodsReject', {
-    goodsId: goodId,
+    goodsId: good.id,
   }, {
     params: {
-      goodsId: goodId,
+      goodsId: good.id,
     }
   }).then((response) => {
     const r = response.data['data']

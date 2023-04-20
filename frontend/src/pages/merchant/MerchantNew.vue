@@ -103,22 +103,6 @@
                                   </div>
                                 </q-card-section>
 
-                                <q-card-actions>
-                                  <q-btn icon="delete" @click="deleteShop(shop)" />
-                                  <q-btn color="grey" round flat dense
-                                    :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                                    @click="expanded = !expanded" />
-                                </q-card-actions>
-
-                                <q-slide-transition>
-                                  <div v-show="expanded">
-                                    <q-separator />
-                                    <q-card-section class="text-subitle2">
-                                      {{ shop.introduce }}
-                                    </q-card-section>
-                                  </div>
-                                </q-slide-transition>
-
                               </q-card>
                             </div>
                           </div>
@@ -162,20 +146,18 @@
                                 </q-card-section>
 
                                 <q-card-actions>
-                                  <q-btn icon="delete" @click="deleteShop(shop)" />
-                                  <q-btn color="grey" round flat dense
-                                    :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                                    @click="expanded = !expanded" />
+                                  <!-- <q-btn icon="delete" @click="deleteShop(shop)" /> -->
+                                  <q-btn push icon="delete" @click="deleteShop(shop)" >
+                                    <q-popup-proxy>
+                                      <q-banner>
+                                        <template v-slot:avatar>
+                                          <q-icon name="signal_wifi_off" color="primary" />
+                                        </template>
+                                        您申请关闭店铺{{ shop.shopName }}
+                                      </q-banner>
+                                    </q-popup-proxy>
+                                  </q-btn>
                                 </q-card-actions>
-
-                                <q-slide-transition>
-                                  <div v-show="expanded">
-                                    <q-separator />
-                                    <q-card-section class="text-subitle2">
-                                      {{ shop.introduce }}
-                                    </q-card-section>
-                                  </div>
-                                </q-slide-transition>
 
                               </q-card>
                             </div>
@@ -219,22 +201,6 @@
                                   </div>
                                 </q-card-section>
 
-                                <q-card-actions>
-                                  <q-btn icon="delete" @click="deleteShop(shop)" />
-                                  <q-btn color="grey" round flat dense
-                                    :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                                    @click="expanded = !expanded" />
-                                </q-card-actions>
-
-                                <q-slide-transition>
-                                  <div v-show="expanded">
-                                    <q-separator />
-                                    <q-card-section class="text-subitle2">
-                                      {{ shop.introduce }}
-                                    </q-card-section>
-                                  </div>
-                                </q-slide-transition>
-
                               </q-card>
                             </div>
                           </div>
@@ -276,22 +242,6 @@
                                     商店状态: {{ shop.status }}
                                   </div>
                                 </q-card-section>
-
-                                <q-card-actions>
-                                  <q-btn icon="delete" @click="deleteShop(shop)" />
-                                  <q-btn color="grey" round flat dense
-                                    :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                                    @click="expanded = !expanded" />
-                                </q-card-actions>
-
-                                <q-slide-transition>
-                                  <div v-show="expanded">
-                                    <q-separator />
-                                    <q-card-section class="text-subitle2">
-                                      {{ shop.introduce }}
-                                    </q-card-section>
-                                  </div>
-                                </q-slide-transition>
 
                               </q-card>
                             </div>
@@ -355,8 +305,8 @@
                 <q-page padding>
                   <q-form ref="myForm" @submit="onSubmit" @reset="onReset" class="q-gutter-md">
                     <br>
-                    <q-input filled v-model="shopName" label="商店名称 *" hint="Name and surname" lazy-rules
-                      :rules="[val => val && val.length > 0 && val.length < 13 || '请输入您的商店名称']" />
+                    <q-input filled v-model="shopName" label="商店名称 *" hint="Name and surname" lazy-rules :rules="[val => val && val.length > 0 && val.length < 13 || '请输入您的商店名称',
+                    val => code != 20009 || '店铺名已被注册过']" />
 
                     <q-input filled v-model="new_category" label="所售卖的商品类别 *" hint="commodity category"
                       :rules="[checkCategory || '请输入商品类别']">
@@ -458,10 +408,10 @@ const stars = ref(4)
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
-const allShops = ref([])
-const openingShops = ref([])
-const applyingShops = ref([])
-const closedShops = ref([])
+let allShops = ref([])
+let openingShops = ref([])
+let applyingShops = ref([])
+let closedShops = ref([])
 
 //跳转到单个店铺
 function toShop(id) {
@@ -482,6 +432,10 @@ function add_category() {
 }
 
 function update() {
+  allShops = ref([])
+  openingShops = ref([])
+  applyingShops = ref([])
+  closedShops = ref([])
   console.log("update")
   axiosInstance.post('/shop/showUser', { id: store.state.userId })
     .then((response) => {
@@ -605,34 +559,34 @@ function onSubmit() {
   console.log(newTextArr);
   console.log('fund: ', fund.value);
   axiosInstance.post('/shop/add', {
-      shopName: shopName.value,
-      category: newTextArr,
-      idNumber: idNumber.value,
-      introduce: introduce.value,
-      address: address.value,
-      fund: fund.value,
-      registrationTime: registrationTime.value,
-      userId: store.state.userId,
-    }).then((response) => {
-      //console.log('Response data:', response.data)
-      // 处理返回数据
-      // 导航到另一个页面
-      code.value = response.data['code'];
-      console.log('code');
-      console.log(code.value);
-      instance.proxy.$forceUpdate();
-      if (code.value == 20000) {
-        layout.value = false;
-        console.log('layout');
-        console.log(layout.value);
-      }
-      console.log(response.data);
-      //myForm.value.resetValidation();
-    }) .catch((error) => {
-      console.error('Error:', error);
-      // 处理错误
-      myForm.value.resetValidation();
-    });
+    shopName: shopName.value,
+    category: newTextArr,
+    idNumber: idNumber.value,
+    introduce: introduce.value,
+    address: address.value,
+    fund: fund.value,
+    registrationTime: registrationTime.value,
+    userId: store.state.userId,
+  }).then((response) => {
+    //console.log('Response data:', response.data)
+    // 处理返回数据
+    // 导航到另一个页面
+    code.value = response.data['code'];
+    console.log('code');
+    console.log(code.value);
+    instance.proxy.$forceUpdate();
+    if (code.value == 20000) {
+      layout.value = false;
+      console.log('layout');
+      console.log(layout.value);
+    }
+    console.log(response.data);
+    //myForm.value.resetValidation();
+  }).catch((error) => {
+    console.error('Error:', error);
+    // 处理错误
+    myForm.value.resetValidation();
+  });
 }
 
 // 重置申请开店表单
@@ -694,29 +648,31 @@ onMounted(() => {
       allShops.value.splice(0, allShops.value.length, ...r);
       console.log(allShops.value);
     });
+  console.log('closed shops: ', closedShops.value)
 });
 
 function deleteShop(shop) {
   console.log("delete shop parameters: ", shop)
   axiosInstance.post('/shop/delete', {
-      id: shop.id,
-      userId: shop.userId,
-      fund: shop.fund,
-    }).then((response) => {
-      code.value = response.data['code'];
-      console.log('code');
-      console.log(code.value);
-      instance.proxy.$forceUpdate();
-      // if (code.value == 20000) {
-      //   layout.value = false;
-      //   console.log('layout');
-      //   console.log(layout.value);
-      // }
-      console.log(response.data);
-    }) .catch((error) => {
-      console.error('Error:', error);
-      // 处理错误
-    });
+    id: shop.id,
+    userId: shop.userId,
+    fund: shop.fund,
+  }).then((response) => {
+    code.value = response.data['code'];
+    console.log('code');
+    console.log(code.value);
+    instance.proxy.$forceUpdate();
+    // if (code.value == 20000) {
+    //   layout.value = false;
+    //   console.log('layout');
+    //   console.log(layout.value);
+    // }
+    console.log(response.data);
+  }).catch((error) => {
+    console.error('Error:', error);
+    // 处理错误
+  });
+  update()
 }
 
 </script>
