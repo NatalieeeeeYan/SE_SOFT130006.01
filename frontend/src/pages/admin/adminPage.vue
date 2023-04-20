@@ -132,8 +132,7 @@
 
                 <q-card-actions>
                   <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityUpdate(commodity)" />
-                  <q-btn color="negative" class="q-mx-auto" icon="clear"
-                    @click="disapproveCommodityUpdate(commodity)" />
+                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityUpdate(commodity)" />
                 </q-card-actions>
               </q-card>
               <q-separator />
@@ -968,6 +967,18 @@ function disapproveCommodityEdit(good) {
 
 // 刷新button事件
 function updata() {
+  let aShopAppRows = ref([])
+  let rShopAppRows = ref([])
+  let rcShopAppRows = ref([])
+
+  let aCommodityUpApp = ref([])
+  let aCommodityEditApp = ref([])
+
+  let rCommodityUpApp = ref([])
+  let rCommodityEditApp = ref([])
+
+  let rcCommodityUpApp = ref([])
+  let rcCommodityEditApp = ref([])
   axiosInstance.post('/shop/showByStatus0_3').then((response) => {
     const r = response.data['data']
     console.log('get rc shop msg: ', r);
