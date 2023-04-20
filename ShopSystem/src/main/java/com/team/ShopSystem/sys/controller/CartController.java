@@ -7,6 +7,7 @@ import com.team.ShopSystem.sys.entity.Goods;
 import com.team.ShopSystem.sys.entity.User;
 import com.team.ShopSystem.sys.mapper.CartGoodsMapper;
 import com.team.ShopSystem.sys.mapper.CartMapper;
+import com.team.ShopSystem.sys.mapper.GoodsImageMapper;
 import com.team.ShopSystem.sys.mapper.GoodsMapper;
 import com.team.ShopSystem.sys.service.ICartService;
 import io.swagger.annotations.Api;
@@ -42,6 +43,8 @@ public class CartController {
 
     @Resource
     CartMapper cartMapper;
+    @Resource
+    GoodsImageMapper goodsImageMapper;
     @GetMapping("/showList")
     @ApiOperation("显示某用户购物车中的所有未下架商品")
     public Result<List<CartGoodsPlus>> showList(@RequestParam Integer userId){
@@ -49,7 +52,9 @@ public class CartController {
         List<CartGoods> list = cartGoodsMapper.getByCartId(cartId);
         List<CartGoodsPlus> goodsList=new ArrayList<CartGoodsPlus>();
         for(CartGoods cartGoods:list){
-            goodsList.add(new CartGoodsPlus(goodsMapper.getById(cartGoods.getGoodsId()),cartGoods));
+            Goods goods=goodsMapper.getById(cartGoods.getGoodsId());
+            goods.setImage(goodsImageMapper.getByGoodsId(cartGoods.getGoodsId()));
+            goodsList.add(new CartGoodsPlus(goods,cartGoods));
         }
         return Result.success(goodsList);
     }
