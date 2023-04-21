@@ -93,6 +93,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         transferRecordsMapper.insert(new TransferRecords("admin_intermediate",shop.getFund(),"user_"+shop.getUserId()));
         User user = userMapper.getById(shop.getUserId());
         user.setAccount(user.getAccount()+ shop.getFund());
+        userMapper.updateById(user);
         return Result.success("审核不通过");
     }
 
