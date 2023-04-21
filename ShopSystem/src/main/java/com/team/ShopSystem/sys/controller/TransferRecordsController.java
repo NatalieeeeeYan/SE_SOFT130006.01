@@ -59,19 +59,20 @@ public class TransferRecordsController {
         return Result.success(recordsList,"成功获取商店流水");
     }
 
-    @PostMapping("/admin")
-    @ApiOperation("获取管理员流水")
-    public Result<?> getAdmin(){
+    @PostMapping("/adminIntermediate")
+    @ApiOperation("获取管理员中间账户流水")
+    public Result<?> getAdminIntermediate(){
         List<TransferRecords> recordsList = transferRecordsMapper.get("admin_intermediate");
-        List<TransferRecords> recordsList2 = transferRecordsMapper.get("admin_profit");
-        recordsList.removeAll(recordsList2);
-        recordsList.addAll(recordsList2);
-        Collections.sort(recordsList, new Comparator<TransferRecords>() {
-            @Override
-            public int compare(TransferRecords o1, TransferRecords o2) {
-                return o1.getId()-o2.getId();
-            }
-        });
+        for (TransferRecords record : recordsList) {
+            record = alterName(record);
+        }
+        return Result.success(recordsList);
+    }
+
+    @PostMapping("/adminProfit")
+    @ApiOperation("获取管理员盈利账户流水")
+    public Result<?> getAdminProfit(){
+        List<TransferRecords> recordsList = transferRecordsMapper.get("admin_profit");
         for (TransferRecords record : recordsList) {
             record = alterName(record);
         }

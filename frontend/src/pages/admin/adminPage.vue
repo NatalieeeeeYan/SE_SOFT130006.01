@@ -104,8 +104,7 @@
           <div class="flex q-justify-around" style="width:800px">
             <!-- 待审批的上架申请 -->
 
-            <div v-for="commodity in rcCommodityUpApp" :key="commodity" class="flex q-py-xs"
-              style="width: 400px;">
+            <div v-for="commodity in rcCommodityUpApp" :key="commodity" class="flex q-py-xs" style="width: 400px;">
               <q-card class="edit-commodity-card" style="width: 350px;">
                 <div class="q-pa-md">
                   <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
@@ -139,39 +138,39 @@
             </div>
 
             <!-- 待审批的修改信息申请 -->
-              <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
-                style="width: 400px">
-                <q-card class="edit-commodity-card" style="width: 350px;">
-                  <div class="q-pa-md">
-                    <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px"
-                      thumbnails infinite>
-                      <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
-                        :img-src="image" />
-                    </q-carousel>
+            <div v-for="commodity in rcCommodityEditApp" :key="commodity" class="flex q-py-xs justify-around"
+              style="width: 400px">
+              <q-card class="edit-commodity-card" style="width: 350px;">
+                <div class="q-pa-md">
+                  <q-carousel class="commodity_img" swipeable animated v-model="commodity.slide" height="200px" thumbnails
+                    infinite>
+                    <q-carousel-slide v-for="(image, index) in commodity.image" :key="index" :name="index + 1"
+                      :img-src="image" />
+                  </q-carousel>
+                </div>
+
+                <q-card-section>
+                  <div class="row no-wrap items-center">
+                    <div class="col text-h6 ellipsis">
+                      {{ commodity.goodsName }}
+                    </div>
                   </div>
+                  <div class="text-subtitle1">
+                    ¥ price: {{ commodity.price }}
+                  </div>
+                  <div class="text-caption text-grey">
+                    {{ commodity.description }}
+                  </div>
+                </q-card-section>
 
-                  <q-card-section>
-                    <div class="row no-wrap items-center">
-                      <div class="col text-h6 ellipsis">
-                        {{ commodity.goodsName }}
-                      </div>
-                    </div>
-                    <div class="text-subtitle1">
-                      ¥ price: {{ commodity.price }}
-                    </div>
-                    <div class="text-caption text-grey">
-                      {{ commodity.description }}
-                    </div>
-                  </q-card-section>
-
-                  <q-card-actions>
-                    <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity)" />
-                    <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity)" />
-                  </q-card-actions>
-                </q-card>
+                <q-card-actions>
+                  <q-btn color="positive" class="q-mx-auto" icon="check" @click="approveCommodityEdit(commodity)" />
+                  <q-btn color="negative" class="q-mx-auto" icon="clear" @click="disapproveCommodityEdit(commodity)" />
+                </q-card-actions>
+              </q-card>
             </div>
           </div>
-          
+
         </div>
 
         <div class="approvedApps" v-if="showApprovedApps">
@@ -799,7 +798,7 @@ function getComAddApproved() {
 }
 
 // 请求所有已通过修改信息的商品信息
-function getComEditApproved(){
+function getComEditApproved() {
   axiosInstance.get('/Goods/showUpdateApproved').then((response) => {
     const r = response.data['data']
     console.log('get 已通过修改商品 msg: ', r);
@@ -846,18 +845,24 @@ function getComEditRejected() {
 function getTransfer() {
   profitAccountTrans.value = []
   intermediateAccountTrans.value = []
-  axiosInstance.post('/transferRecords/admin', {
+  axiosInstance.post('/transferRecords/adminIntermediate', {
     // shopId: shopId,
   }).then((response) => {
     const r = response.data['data']
-    console.log('get admin transfer records: ', r);
+    console.log('get admin intermediate transfer records: ', r);
     r.forEach(function (item) {
       // console.log('get receive name: ', item['receiveName'])
-      if (item['receiveName'] === 'admin_intermediate') {
-        intermediateAccountTrans.value.push(item)
-      } else if (item['receiveName'] === 'admin_profit') {
-        profitAccountTrans.value.push(item)
-      }
+      intermediateAccountTrans.value.push(item)
+    });
+  });
+  axiosInstance.post('/transferRecords/adminProfit', {
+    // shopId: shopId,
+  }).then((response) => {
+    const r = response.data['data']
+    console.log('get admin profit transfer records: ', r);
+    r.forEach(function (item) {
+      // console.log('get receive name: ', item['receiveName'])
+      profitAccountTrans.value.push(item)
     });
   });
 }
@@ -1031,7 +1036,7 @@ function updata() {
 
   rcCommodityUpApp.value = []
   rcCommodityEditApp.value = []
-  
+
   // 获取所有待审批的商店信息：开店/闭店
   getRcShop()
 
