@@ -183,7 +183,7 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import { useStore } from 'src/store'
 import axios from 'axios'
 import { onMounted } from 'vue'
@@ -200,7 +200,6 @@ const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
 const shops = ref([])
-const stars = ref(4)
 const instance = getCurrentInstance()
 
 const commodities = ref([])
@@ -225,9 +224,11 @@ function toShop(id) {
 
 onMounted(() => {
   //请求所有已批准开店的店铺status=1
-  axiosInstance.post('/shop/showByStatus1_4').then((res) => {
+  axiosInstance.get('/shop/all').then((res) => {
     console.log("店铺")
     console.log(res.data.data)
+    shops.value = res.data.data.filter(obj => obj.status !== 0);
+    shops.value = res.data.data.filter(obj => obj.status !== 2);
     shops.value = res.data.data.filter(obj => obj.status !== 4);
   });
 

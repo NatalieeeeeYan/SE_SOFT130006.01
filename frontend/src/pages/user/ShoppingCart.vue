@@ -88,17 +88,23 @@
                             </q-card-section>
 
                             <q-card-section class="col-5 flex justify-end">
-                              <q-img class="rounded-borders" :src="commodity.goods.image[0]"  style="width:200px; height:150px"></q-img>
+                              <q-img class="rounded-borders" :src="commodity.goods.image[0]"
+                                style="width:200px; height:150px"></q-img>
                             </q-card-section>
                           </q-card-section>
 
                           <q-card-section>
-                            <div class="flex">
-                              <q-btn class="decrement" icon="remove" size="xs" @click="decrement(commodity)" />
-                              <div class="justify-center" style="width:30px; display:flex; align-items:center">{{
-                                commodity.cartGoods.goodsQuantity }}</div>
-                              <q-btn class="increment" icon="add" size="xs" @click="increment(commodity)" />
-                            </div>
+                            <template v-if="!commodity.cartGoods.isRemoved">
+                              <div class="flex">
+                                <q-btn class="decrement" icon="remove" size="xs" @click="decrement(commodity)" />
+                                <div class="justify-center" style="width:30px; display:flex; align-items:center">{{
+                                  commodity.cartGoods.goodsQuantity }}</div>
+                                <q-btn class="increment" icon="add" size="xs" @click="increment(commodity)" />
+                              </div>
+                            </template>
+                            <template v-else>
+                              <div class="text-red">已下架</div>
+                            </template>
                           </q-card-section>
 
                           <q-separator />
@@ -159,30 +165,30 @@ function batch_delete() {
   console.log(selectedCommodities.value)
   const selectedCommodityIds = Object.keys(selectedCommodities.value).map(Number);
   axiosInstance.delete(`/cart/deleteMulti?goodsIdList=${selectedCommodityIds}&userId=${store.state.userId}`).then((res) => {
-      console.log("batch")
-      console.log(res.data)
-      update()
-    });
+    console.log("batch")
+    console.log(res.data)
+    update()
+  });
 }
 
 function decrement(commodity) {
   console.log("decrement")
   console.log(commodity)
   axiosInstance.put(`/cart/deleteSingle?goodsId=${commodity.goods.id}&userId=${store.state.userId}`).then((res) => {
-      console.log("cart")
-      console.log(res.data)
-      update()
-    });
+    console.log("cart")
+    console.log(res.data)
+    update()
+  });
 }
 
 function increment(commodity) {
   console.log("increment")
   console.log(commodity)
   axiosInstance.post(`/cart/add2cart?goodsId=${commodity.goods.id}&userId=${store.state.userId}`).then((res) => {
-      console.log("cart")
-      console.log(res.data)
-      update()
-    });
+    console.log("cart")
+    console.log(res.data)
+    update()
+  });
 
 }
 
@@ -198,7 +204,7 @@ function update() {
       commodities.value = res.data.data
     });
 
-    instance.proxy.$forceUpdate();
+  instance.proxy.$forceUpdate();
 }
 
 onMounted(() => {

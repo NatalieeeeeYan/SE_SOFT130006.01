@@ -76,8 +76,9 @@
                                 <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" /> -->
                                 <q-card-section>
                                   <div class="text-overline text-orange-9">Overline</div>
-                                  <q-btn flat class="text-h6" @click="toShop(shop.id)">
+                                  <q-btn flat class="text-h6" @click="toShop(shop)">
                                     {{ shop.shopName }}
+                                    <q-tooltip v-model="shop.showing"> {{ shop.status }}</q-tooltip>
                                   </q-btn>
                                   <div class="row no-wrap items-center">
                                     <q-rating size="18px" v-model="stars" :max="5" color="primary" />
@@ -118,9 +119,11 @@
                                 <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" /> -->
                                 <q-card-section>
                                   <div class="text-overline text-orange-9">Overline</div>
-                                  <q-btn flat class="text-h6" @click="toShop(shop.id)">
-                                    {{ shop.shopName }}
+                                  <q-btn flat class="text-h6" @click="toShop(shop)" :label="shop.shopName">
+
+                                    <q-tooltip v-model="shop.showing"> {{ shop.status }}</q-tooltip>
                                   </q-btn>
+
                                   <div class="row no-wrap items-center">
                                     <q-rating size="18px" v-model="stars" :max="5" color="primary" />
                                   </div>
@@ -174,8 +177,9 @@
                                 <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" /> -->
                                 <q-card-section>
                                   <div class="text-overline text-orange-9">Overline</div>
-                                  <q-btn flat class="text-h6" @click="toShop(shop.id)">
+                                  <q-btn flat class="text-h6" @click="toShop(shop)">
                                     {{ shop.shopName }}
+                                    <q-tooltip v-model="shop.showing"> {{ shop.status }}</q-tooltip>
                                   </q-btn>
                                   <div class="row no-wrap items-center">
                                     <q-rating size="18px" v-model="stars" :max="5" color="primary" />
@@ -216,8 +220,9 @@
                                 <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" /> -->
                                 <q-card-section>
                                   <div class="text-overline text-orange-9">Overline</div>
-                                  <q-btn flat class="text-h6" @click="toShop(shop.id)">
+                                  <q-btn flat class="text-h6" @click="toShop(shop)">
                                     {{ shop.shopName }}
+                                    <q-tooltip v-model="shop.showing"> {{ shop.status }}</q-tooltip>
                                   </q-btn>
                                   <div class="row no-wrap items-center">
                                     <q-rating size="18px" v-model="stars" :max="5" color="primary" />
@@ -395,6 +400,7 @@ const code = ref(null);
 const accept = ref(false)
 const instance = getCurrentInstance()
 const stars = ref(4)
+const showing = ref(false)
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
@@ -410,12 +416,14 @@ function applyAddShop() {
 }
 
 //跳转到单个店铺
-function toShop(id) {
-  console.log(id)
-  store.commit('setShopId', id);
+function toShop(shop) {
+  store.commit('setShopId', shop.id);
   console.log("shopId")
   console.log(store.state.shopId);
-  router.push('/merchantshop');
+  if(shop.status == "闭店未审核" || shop.status == "开店已通过")
+  {
+    router.push('/merchantshop');
+  }
 }
 
 // 添加商品种类
@@ -578,14 +586,15 @@ function onSubmit() {
       update()
     }
     console.log(response.data);
+    onReset()
+    layout.value = false
     //myForm.value.resetValidation();
   }).catch((error) => {
     console.error('Error:', error);
     // 处理错误
     myForm.value.resetValidation();
   });
-  onReset()
-  layout.value = false
+
 }
 
 // 重置申请开店表单
