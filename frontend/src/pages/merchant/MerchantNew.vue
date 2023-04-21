@@ -594,7 +594,7 @@ function onSubmit() {
     // 处理错误
     myForm.value.resetValidation();
   });
-
+  layout.value = false
 }
 
 // 重置申请开店表单
@@ -602,7 +602,7 @@ function onReset() {
   shopName.value = null;
   accept.value = false;
   introduce.value = null;
-  categories.value = ref(null);
+  categories.value = [];
   idNumber.value = null;
   address.value = null;
   fund.value = null;

@@ -1077,6 +1077,7 @@ function updata() {
     console.log('get profile account msg: ', r);
     profitAccount.value = r
   });
+  
   getTransfer()
 }
 

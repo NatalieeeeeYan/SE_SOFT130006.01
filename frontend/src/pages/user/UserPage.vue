@@ -191,7 +191,7 @@ import { useRouter } from 'vue-router'
 
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
 const store = useStore()
-const username = ref('primerL')
+let username = ref(null)
 const tab = ref("Commodity")
 const expanded = ref(false)
 const router = useRouter()
@@ -223,6 +223,15 @@ function toShop(id) {
 }
 
 onMounted(() => {
+  axiosInstance.post('/user/getUserInfo', {
+    id: store.state.userId 
+  }).then((res) => {
+    console.log('get user info res: ', res)
+    // data = res['data']
+    username.value = res.data['data']['username']
+    console.log('username: ', username.value)
+  })
+
   //请求所有已批准开店的店铺status=1
   axiosInstance.get('/shop/all').then((res) => {
     console.log("店铺")
