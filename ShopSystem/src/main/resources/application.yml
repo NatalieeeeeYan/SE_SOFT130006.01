@@ -37,4 +37,4 @@ constants:
   rejectDeleted: 5
 
 prop:
-  upload-folder: /Users/songwenyan/FduCourses/SoftwareEngineering/code/lab3_more/ShopSystem/uploadImage/
+  upload-folder: /Users/songwenyan/FduCourses/SoftwareEngineering/code/Lab3/ShopSystem/uploadImage/
