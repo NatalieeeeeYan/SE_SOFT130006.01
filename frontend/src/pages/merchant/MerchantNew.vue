@@ -382,7 +382,8 @@ import { useRouter } from 'vue-router'
 let id = 0
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
 const store = useStore()
-const username = store.state.username
+const username = localStorage.getItem('username');
+const userId = localStorage.getItem('userId');
 const tab = ref('mails')
 const innerTab = ref('allShops')
 const splitterModel = ref(20)
@@ -441,7 +442,7 @@ function update() {
   applyingShops = ref([])
   closedShops = ref([])
   console.log("update")
-  axiosInstance.post('/shop/showUser', { id: store.state.userId })
+  axiosInstance.post('/shop/showUser', { id: userId })
     .then((response) => {
       const r = response.data['data'];
       console.log('Show shop message: ', r);
@@ -570,7 +571,7 @@ function onSubmit() {
     address: address.value,
     fund: fund.value,
     registrationTime: registrationTime.value,
-    userId: store.state.userId,
+    userId: localStorage.getItem('userId'),
   }).then((response) => {
     //console.log('Response data:', response.data)
     // 处理返回数据
@@ -613,7 +614,7 @@ onMounted(() => {
   //展示所有商店
   console.log('Show shop');
   console.log(store.state.userId);
-  axiosInstance.post('/shop/showUser', { id: store.state.userId })
+  axiosInstance.post('/shop/showUser', { id: userId })
     .then((response) => {
       const r = response.data['data'];
       console.log('Show shop message: ', r);

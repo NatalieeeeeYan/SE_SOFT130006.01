@@ -126,11 +126,11 @@ import axios from 'axios'
 import { onMounted } from 'vue'
 
 const store = useStore()
-const shopId = store.state.shopId
+const shopId = localStorage.getItem('shopId')
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
 });
-
+const userId = localStorage.getItem('userId')
 const tab = ref("Commodity")
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
 const isFollowed = ref(false)
@@ -169,9 +169,9 @@ function toggleLabel() {
 function addShoppingCart(id) {
   console.log(id)
   console.log("add shopping cart")
-  console.log(store.state.userId)
+
   //记得改成全局变量
-  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=${store.state.userId}`).then((res) => {
+  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=${userId}`).then((res) => {
       console.log("cart")
       console.log(res.data)
     });

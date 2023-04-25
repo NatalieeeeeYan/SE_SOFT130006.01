@@ -191,7 +191,8 @@ import { useRouter } from 'vue-router'
 
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
 const store = useStore()
-const username = ref('primerL')
+const username = localStorage.getItem('username');
+const userId = localStorage.getItem('userId');
 const tab = ref("Commodity")
 const expanded = ref(false)
 const router = useRouter()
@@ -208,10 +209,10 @@ function addShoppingCart(id) {
   console.log(id)
   console.log("add shopping cart")
   //记得改成全局变量
-  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=${store.state.userId}`).then((res) => {
-      console.log("cart")
-      console.log(res.data.data)
-    });
+  axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=${userId}`).then((res) => {
+    console.log("cart")
+    console.log(res.data.data)
+  });
 }
 
 //跳转到单个店铺
@@ -219,6 +220,10 @@ function toShop(id) {
   console.log(id)
   store.commit('setShopId', id);
   console.log(store.state.shopId);
+
+  localStorage.setItem('shopId', id);
+  var myVar = localStorage.getItem('shopId');
+
   router.push('/shop');
 }
 

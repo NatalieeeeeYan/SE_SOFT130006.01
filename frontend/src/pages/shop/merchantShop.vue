@@ -495,7 +495,8 @@ const links1 = [
 const tab = ref('onShelve')
 const layout = ref(false)
 const layout_delete = ref(false)
-const shopId = store.state.shopId
+const shopId = localStorage.getItem('shopId')
+
 let editCommodity = ref(false)
 let viewOnly = ref(true)
 

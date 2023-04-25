@@ -21,17 +21,17 @@
             <!-- <input name="username" v-model="name_r" type="text" placeholder="用户名" /> -->
             <q-input ref="name_merchant_r" filled name="username" v-model="name_r" label="姓名 *" hint="username" lazy-rules
               :rules="[
-                (val) => (val && val.length > 0) || '请输入您的用户名',
-                (val) => code_r != 20002 || '用户名或密码错误',
-                (val) => code_r != 20008 || '用户类错误',
-              ]" @click="code_r = 0"></q-input>
+                  (val) => (val && val.length > 0) || '请输入您的用户名',
+                  (val) => code_r != 20002 || '用户名或密码错误',
+                  (val) => code_r != 20008 || '用户类错误',
+                ]" @click="code_r = 0"></q-input>
             <!-- <br><br> -->
             <q-input ref="nameField" name="password" v-model="password_r" filled :type="isPwd ? 'password' : 'text'"
               label="密码 *" hint="Your password *" lazy-rules :rules="[
-                (val) => (val && val.length > 0) || '请输入您的密码',
-                (val) => code_r != 20002 || '用户名或密码错误',
-                (val) => code_r != 20008 || '用户类错误',
-              ]" @click="code_r = 0">
+                  (val) => (val && val.length > 0) || '请输入您的密码',
+                  (val) => code_r != 20002 || '用户名或密码错误',
+                  (val) => code_r != 20008 || '用户类错误',
+                ]" @click="code_r = 0">
               <template v-slot:append>
                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
@@ -75,19 +75,18 @@
         <div class="input-box">
           <q-form ref="consumer_r" class="q-gutter-md" @submit="register_consumer">
             <!-- <input name="username" v-model="name_r" type="text" placeholder="用户名" /> -->
-            <q-input  filled name="username" v-model.trim="name_r" label="姓名 *" hint="username"
-              lazy-rules :rules="[
+            <q-input filled name="username" v-model.trim="name_r" label="姓名 *" hint="username" lazy-rules :rules="[
                 (val) => (val && val.length > 0) || '请输入您的用户名',
                 (val) => code_r != 20002 || '用户名或密码错误',
                 (val) => code_r != 20008 || '用户类错误',
               ]" @click="code_r = 0"></q-input>
             <!-- <br><br> -->
-            <q-input  name="password" v-model="password_r" filled
-              :type="isPwd ? 'password' : 'text'" label="密码 *" hint="Your password *" lazy-rules :rules="[
-                (val) => (val && val.length > 0) || '请输入您的密码',
-                (val) => code_r != 20002 || '用户名或密码错误',
-                (val) => code_r != 20008 || '用户类错误',
-              ]" @click="code_r = 0">
+            <q-input name="password" v-model="password_r" filled :type="isPwd ? 'password' : 'text'" label="密码 *"
+              hint="Your password *" lazy-rules :rules="[
+                  (val) => (val && val.length > 0) || '请输入您的密码',
+                  (val) => code_r != 20002 || '用户名或密码错误',
+                  (val) => code_r != 20008 || '用户类错误',
+                ]" @click="code_r = 0">
               <template v-slot:append>
                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
@@ -149,47 +148,47 @@
             class="q-gutter-md">
             <br />
             <q-input filled name="username" v-model.trim="username" label="姓名 *" hint="userId" :rules="[
-              (val) => (val && val.length > 0) || '请输入您的姓名',
-              (val) => code != 20004 || '该昵称已存在',
-            ]" @click="code = 0"></q-input>
+                (val) => (val && val.length > 0) || '请输入您的姓名',
+                (val) => code != 20004 || '该昵称已存在',
+              ]" @click="code = 0"></q-input>
 
             <q-input filled name="phone" v-model="phone" label="手机号码 *" hint="Your phone number" lazy-rules :rules="[
-              (val) => (val && val.length > 0) || '请输入您的手机号',
-              (val) => val.length === 11 || '请输入正确的手机号',
-              (val) => code != 20005 || '手机已被注册过',
-            ]" @click="code = 0" />
+                (val) => (val && val.length > 0) || '请输入您的手机号',
+                (val) => val.length === 11 || '请输入正确的手机号',
+                (val) => code != 20005 || '手机已被注册过',
+              ]" @click="code = 0" />
             <!-- 手机号的合法性，验证了位数: 11位 -->
 
             <q-input filled name="idNumber" v-model="idNumber" label="身份证号 *" hint="Your ID card number" lazy-rules
               :rules="[
-                (val) => (val && val.length > 0) || '请输入您的身份证号',
-                (val) =>
-                  (val.length === 18 && checkIdNumber(idNumber)) ||
-                  '请输入正确的身份证号',
-                (val) => code != 20006 || '身份证号已被注册过',
-              ]" @click="code = 0" />
+                  (val) => (val && val.length > 0) || '请输入您的身份证号',
+                  (val) =>
+                    (val.length === 18 && checkIdNumber(idNumber)) ||
+                    '请输入正确的身份证号',
+                  (val) => code != 20006 || '身份证号已被注册过',
+                ]" @click="code = 0" />
             <!-- 身份证号的合法性，验证了位数: 18位 -->
 
             <q-input filled name="email" v-model="email" label="邮箱 *" hint="Your e-mail address" lazy-rules :rules="[
-              (val) => (val && val.length > 0) || '请输入您的邮箱地址',
-              (val) => validateEmailDomain(val) || 'Invalid email domain',
-              (val) =>
-                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-                  val
-                ) || 'Invalid email',
-              (val) => code != 20007 || '邮箱已被注册过',
-            ]" @click="code = 0" />
+                (val) => (val && val.length > 0) || '请输入您的邮箱地址',
+                (val) => validateEmailDomain(val) || 'Invalid email domain',
+                (val) =>
+                  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                    val
+                  ) || 'Invalid email',
+                (val) => code != 20007 || '邮箱已被注册过',
+              ]" @click="code = 0" />
             <!-- 邮箱域名不合法: 显示 Invalid email domain -->
             <!-- 邮箱格式不合法（不是邮箱）: 显示 Invalid email -->
             <q-input name="password" v-model="password" filled :type="isPwd ? 'password' : 'text'" label="密码 *"
               hint="Your password *" lazy-rules :rules="[
-                (val) => (val && val.length > 5) || '请输入密码',
-                (val) =>
-                  (val && val.length < 33) || '密码长度请设置在6-32位之间',
-                (val) =>
-                  validatePassword(val) ||
-                  '密码中应该至少包含数字、字母和特殊字符（-或_）中的至少两种',
-              ]">
+                  (val) => (val && val.length > 5) || '请输入密码',
+                  (val) =>
+                    (val && val.length < 33) || '密码长度请设置在6-32位之间',
+                  (val) =>
+                    validatePassword(val) ||
+                    '密码中应该至少包含数字、字母和特殊字符（-或_）中的至少两种',
+                ]">
               <template v-slot:append>
                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
@@ -409,6 +408,12 @@ export default {
         if (model.value == 'merchant') roleId.value = 3;
         else roleId.value = 2;
         store.commit('setUsername', username.value);
+
+        localStorage.setItem('username', username.value);
+        var myVar = localStorage.getItem('username');
+        console.log("localStorage.getItem('myVar')")
+        console.log(myVar)
+
         console.log('注册：username');
         console.log(store.state.username);
         axiosInstance
@@ -431,12 +436,23 @@ export default {
 
             if (code.value == 20000 && roleId.value == 3) {
               store.commit('setUserId', response_register.value['data']);
+              localStorage.setItem('userId', response_register.value['data']);
+              var myVar = localStorage.getItem('userId');
+              console.log("localStorage.getItem('myVar')")
+              console.log(myVar)
+
               router.push('/merchantpage');
               onReset();
             } else if (code.value == 20000 && roleId.value == 2) {
               store.commit('setUserId', response_register.value['data']);
-              router.push('/user');
+
+              localStorage.setItem('userId', response_register.value['data']);
+              var myVar = localStorage.getItem('userId');
+              console.log("localStorage.getItem('myVar')")
+              console.log(myVar)
               onReset();
+
+              router.push('/user');
             }
             console.log(store.state.userId);
 
@@ -473,6 +489,11 @@ export default {
         console.log(password_r.value);
         store.commit('setUsername', name_r.value);
         console.log(store.state.username);
+        localStorage.setItem('username', name_r.value);
+        var myVar = localStorage.getItem('username');
+        console.log("localStorage.getItem('myVar')")
+        console.log(myVar)
+
         axiosInstance
           .post('/user/login', {
             username: name_r.value,
@@ -492,6 +513,10 @@ export default {
 
             if (code_r.value == 20000) {
               store.commit('setUserId', response_register.value['data']);
+              localStorage.setItem('userId', response_register.value['data']);
+              var myVar = localStorage.getItem('userId');
+              console.log("localStorage.getItem('myVar')")
+              console.log(myVar)
               console.log('userId');
               console.log(store.state.userId);
               router.push('/merchantpage');
@@ -508,6 +533,12 @@ export default {
         console.log(password_r.value);
         store.commit('setUsername', name_r.value);
         console.log(store.state.username);
+
+        localStorage.setItem('username', name_r.value);
+        var myVar = localStorage.getItem('username');
+        console.log("localStorage.getItem('myVar')")
+        console.log(myVar)
+
         axiosInstance
           .post('/user/login', {
             username: name_r.value,
@@ -528,6 +559,12 @@ export default {
             if (code_r.value == 20000) {
               store.commit('setUserId', response_register.value['data']);
               console.log(store.state.userId);
+
+              localStorage.setItem('userId', response_register.value['data']);
+              var myVar = localStorage.getItem('userId');
+              console.log("localStorage.getItem('myVar')")
+              console.log(myVar)
+
               router.push('/user');
             }
           })

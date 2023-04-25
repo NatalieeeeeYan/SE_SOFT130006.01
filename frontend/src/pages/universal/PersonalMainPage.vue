@@ -431,7 +431,7 @@ let editMsg = ref(null)
 
 let myForm = ref(null)
 
-let userId = store.state.userId
+let userId = localStorage.getItem('userId')
 let username = ref(null)
 let pre_username = ref(null)
 let phone = ref(null)

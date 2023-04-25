@@ -37,7 +37,8 @@ export default route(function ({ store }) {
 
   Router.beforeEach((to, from, next) => {
     //const store = useStore();
-    const isAuthenticated = !!store.state.userId;
+    const userId = localStorage.getItem('userId');
+    const isAuthenticated = !!userId;
     if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
       console.log('not authenticated');
       next({ name: 'login' });

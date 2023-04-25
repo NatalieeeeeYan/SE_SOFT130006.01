@@ -142,15 +142,14 @@
 
 <script setup>
 import { ref, getCurrentInstance } from 'vue'
-import { useStore } from 'src/store'
 import axios from 'axios'
 import { onMounted } from 'vue'
 
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
-const store = useStore()
-const username = store.state.username
+const username = localStorage.getItem('username')
 const tab = ref("Commodity")
 const instance = getCurrentInstance()
+const userId = localStorage.getItem('userId')
 
 
 const axiosInstance = axios.create({
@@ -164,7 +163,7 @@ const selectedCommodities = ref([]) // 存储选中的商品
 function batch_delete() {
   console.log(selectedCommodities.value)
   const selectedCommodityIds = Object.keys(selectedCommodities.value).map(Number);
-  axiosInstance.delete(`/cart/deleteMulti?goodsIdList=${selectedCommodityIds}&userId=${store.state.userId}`).then((res) => {
+  axiosInstance.delete(`/cart/deleteMulti?goodsIdList=${selectedCommodityIds}&userId=${userId}`).then((res) => {
     console.log("batch")
     console.log(res.data)
     update()
@@ -174,7 +173,7 @@ function batch_delete() {
 function decrement(commodity) {
   console.log("decrement")
   console.log(commodity)
-  axiosInstance.put(`/cart/deleteSingle?goodsId=${commodity.goods.id}&userId=${store.state.userId}`).then((res) => {
+  axiosInstance.put(`/cart/deleteSingle?goodsId=${commodity.goods.id}&userId=${userId}`).then((res) => {
     console.log("cart")
     console.log(res.data)
     update()
@@ -184,7 +183,7 @@ function decrement(commodity) {
 function increment(commodity) {
   console.log("increment")
   console.log(commodity)
-  axiosInstance.post(`/cart/add2cart?goodsId=${commodity.goods.id}&userId=${store.state.userId}`).then((res) => {
+  axiosInstance.post(`/cart/add2cart?goodsId=${commodity.goods.id}&userId=${userId}`).then((res) => {
     console.log("cart")
     console.log(res.data)
     update()
@@ -196,7 +195,7 @@ function update() {
   axiosInstance.get('/cart/showList',
     {
       params: {
-        userId: store.state.userId
+        userId: userId
       }
     }).then((res) => {
       console.log("update")
@@ -212,7 +211,7 @@ onMounted(() => {
   axiosInstance.get('/cart/showList',
     {
       params: {
-        userId: store.state.userId
+        userId: userId
       }
     }).then((res) => {
       console.log("res")
