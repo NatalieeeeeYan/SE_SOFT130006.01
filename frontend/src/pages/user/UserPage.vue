@@ -195,6 +195,7 @@ const userId = localStorage.getItem('userId');
 const tab = ref("Commodity")
 const expanded = ref(false)
 const router = useRouter()
+let r = ref(null)
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
@@ -206,7 +207,7 @@ const commodities = ref([])
 
 function addShoppingCart(id) {
   console.log(id)
-  console.log("add shopping cart")
+  console.log('add shopping cart')
   //记得改成全局变量
   axiosInstance.post(`/cart/add2cart?goodsId=${id}&userId=${userId}`).then((res) => {
     console.log("cart")
@@ -232,16 +233,20 @@ onMounted(() => {
 
   //请求所有已批准开店的店铺status=1
   axiosInstance.get('/shop/all').then((res) => {
-    console.log("店铺")
+    console.log('店铺')
     console.log(res.data.data)
-    shops.value = res.data.data.filter(obj => obj.status !== 0);
-    shops.value = res.data.data.filter(obj => obj.status !== 2);
-    shops.value = res.data.data.filter(obj => obj.status !== 4);
+    const r = res.data.data
+    r.forEach(function (item) {
+      if (item.status === 1 || item.status === 5 || item.status === 3) {
+        shops.value.push(item)
+      }
+    });
   });
+  console.log('获取所有开店的店铺：', shops.value)
 
   //请求所有商品信息
   axiosInstance.get('/Goods/showAllApprovedGoods').then((res) => {
-    console.log("res")
+    console.log('res')
     console.log(res.data.data)
     commodities.value = res.data.data
     console.log(commodities.value)
