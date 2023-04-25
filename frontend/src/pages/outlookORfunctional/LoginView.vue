@@ -580,6 +580,10 @@ export default {
     this.preRef = this.$refs.preBox;
     const store = useStore()
     store.commit('setUserId', 0);
+
+    localStorage.setItem('userId', 0);
+    console.log("localStorage")
+    console.log(localStorage.getItem('userId'))
   },
 };
 </script>

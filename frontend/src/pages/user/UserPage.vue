@@ -190,7 +190,6 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const url = ref('https://avatars.githubusercontent.com/u/105032850?s=400&u=285d7d130058e413bb8797cb52bc10f75c343076&v=4')
-const store = useStore()
 const username = localStorage.getItem('username');
 const userId = localStorage.getItem('userId');
 const tab = ref("Commodity")
@@ -228,6 +227,9 @@ function toShop(id) {
 }
 
 onMounted(() => {
+  console.log("localStorage")
+  console.log(localStorage.getItem('userId'))
+
   //请求所有已批准开店的店铺status=1
   axiosInstance.get('/shop/all').then((res) => {
     console.log("店铺")
