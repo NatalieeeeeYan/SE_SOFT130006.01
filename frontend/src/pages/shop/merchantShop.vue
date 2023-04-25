@@ -495,7 +495,6 @@ const links1 = [
 const tab = ref('onShelve')
 const layout = ref(false)
 const layout_delete = ref(false)
-const shopId = localStorage.getItem('shopId')
 
 let editCommodity = ref(false)
 let viewOnly = ref(true)
@@ -525,6 +524,7 @@ let editComStatus = ref(null)
 const shops = ref([])
 const code = ref(null)
 let transferExpanded = ref(false)
+const shopId = localStorage.getItem('shopId')
 
 // 商品展示（分类数组）
 let onShelveCmdt = ref([])
@@ -662,6 +662,8 @@ function handleUpload(event) {
 
 onMounted(() => {
   //显示该店铺的信息
+  console.log('shopId: ', shopId)
+
   axiosInstance.get('/shop/showShopByShopId', {
     params: {
       shopId: shopId
