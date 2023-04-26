@@ -421,7 +421,9 @@ function toShop(shop) {
   store.commit('setShopId', shop.id);
   console.log("shopId")
   console.log(store.state.shopId);
+
   localStorage.setItem('shopId', shop.id);
+
   if(shop.status == "闭店未审核" || shop.status == "开店已通过")
   {
     router.push('/merchantshop');

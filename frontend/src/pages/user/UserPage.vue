@@ -184,7 +184,6 @@
 
 <script setup>
 import { ref, getCurrentInstance } from 'vue'
-import { useStore } from 'src/store'
 import axios from 'axios'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -195,7 +194,6 @@ const userId = localStorage.getItem('userId');
 const tab = ref("Commodity")
 const expanded = ref(false)
 const router = useRouter()
-let r = ref(null)
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:9999',
@@ -218,11 +216,8 @@ function addShoppingCart(id) {
 //跳转到单个店铺
 function toShop(id) {
   console.log(id)
-  store.commit('setShopId', id);
-  console.log(store.state.shopId);
 
   localStorage.setItem('shopId', id);
-  var myVar = localStorage.getItem('shopId');
 
   router.push('/shop');
 }
