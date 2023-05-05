@@ -396,7 +396,7 @@ import { useQuasar } from 'quasar'
 
 const q = useQuasar();
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:9999',
+  baseURL: 'http://120.46.154.28:9999',
 });
 
 let leftDrawerOpen = ref(false)
@@ -1077,7 +1077,7 @@ function updata() {
     console.log('get profile account msg: ', r);
     profitAccount.value = r
   });
-  
+
   getTransfer()
 }
 

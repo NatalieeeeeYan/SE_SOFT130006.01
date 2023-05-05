@@ -404,7 +404,7 @@ const stars = ref(4)
 const showing = ref(false)
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:9999',
+  baseURL: 'http://120.46.154.28:9999',
 });
 let allShops = ref([])
 let openingShops = ref([])

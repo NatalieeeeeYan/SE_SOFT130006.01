@@ -128,7 +128,7 @@ import { onMounted } from 'vue'
 const store = useStore()
 const shopId = localStorage.getItem('shopId')
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:9999',
+  baseURL: 'http://120.46.154.28:9999',
 });
 const userId = localStorage.getItem('userId')
 const tab = ref("Commodity")

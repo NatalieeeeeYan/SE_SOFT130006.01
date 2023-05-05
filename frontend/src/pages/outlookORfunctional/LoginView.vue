@@ -144,7 +144,7 @@
 
       <q-page-container>
         <q-page padding>
-          <q-form ref="myForm" action="http://localhost:9999/user" method="post" @submit="onSubmit" @reset="onReset"
+          <q-form ref="myForm" action="http://120.46.154.28:9999/user" method="post" @submit="onSubmit" @reset="onReset"
             class="q-gutter-md">
             <br />
             <q-input filled name="username" v-model.trim="username" label="姓名 *" hint="userId" :rules="[
@@ -241,7 +241,7 @@ export default {
 
     const submitting = ref(false);
     const axiosInstance = axios.create({
-      baseURL: 'http://localhost:9999',
+      baseURL: 'http://120.46.154.28:9999',
     });
 
     let username = ref(null);
