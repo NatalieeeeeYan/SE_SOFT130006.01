@@ -189,7 +189,7 @@
 
                     <div class="personalInfo-display-change" style="max-width: 100%; width: 70%;">
                         <div class="textInfo" style="max-width: 100%; width: 100%;">
-                            <q-form ref="myForm" action="http://localhost:9999/user" method="post"
+                            <q-form ref="myForm" action="http://120.46.154.28:9999/user" method="post"
                                 @submit="postProfileUpdate" @reset="onReset" class="q-gutter-md">
                                 <dl>
                                     <dt>
@@ -365,7 +365,7 @@
 
                             <q-page-container>
                                 <q-page padding>
-                                    <q-form ref="myForm" action="http://localhost:9999/user" method="post"
+                                    <q-form ref="myForm" action="http://120.46.154.28:9999/user" method="post"
                                         @submit="onSubmit" @reset="onReset" class="q-gutter-md">
                                         <br />
                                         <q-input></q-input>
@@ -405,7 +405,7 @@ import PSL from 'psl';
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:9999',
+    baseURL: 'http://120.46.154.28:9999',
 });
 let response_register = ref(null)
 let code = ref(null)

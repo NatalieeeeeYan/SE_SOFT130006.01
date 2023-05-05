@@ -380,7 +380,7 @@
                     <q-input filled v-model="price" label="商品价格 *" hint="registered funds" lazy-rules :rules="[val => val && val.length > 0 || '请输入商品价格',
                       checkprice || '价格需为大与0的浮点数']"></q-input>
 
-                    <q-uploader field-name="files" style="width: 530px" url="http://localhost:9999/Goods/uploadImg"
+                    <q-uploader field-name="files" style="width: 530px" url="http://120.46.154.28:9999/Goods/uploadImg"
                       label="Restricted to images" multiple @uploading="onFileUploading" accept="image/*"
                       Content-Type='multipart/form-data' :auto-upload="false" @uploaded="handleUpload($event)"
                       @rejected="onRejected" />
@@ -424,7 +424,7 @@
 
           <q-page-container>
             <q-page padding>
-              <q-form ref="myForm" action="http://localhost:9999/user" method="post" @submit="postProfileUpdate"
+              <q-form ref="myForm" action="http://120.46.154.28:9999/user" method="post" @submit="postProfileUpdate"
                 @reset="onReset" class="q-gutter-md">
                 <dl>
                   <dt>
@@ -476,13 +476,11 @@
 
 <script setup>
 import { ref, computed, getCurrentInstance } from 'vue'
-import { useStore } from 'src/store'
 import axios from 'axios'
 import { onMounted } from 'vue'
 
-const store = useStore()
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:9999',
+  baseURL: 'http://120.46.154.28:9999',
 });
 let leftDrawerOpen = ref(false)
 
@@ -511,7 +509,6 @@ const image = ref([])
 const delete_goodsName = ref(null)
 const delete_description = ref(null)
 const delete_price = ref(null)
-const delete_id = ref(null)
 
 //修改申请记录
 let editComId = ref(null)
@@ -623,6 +620,7 @@ function onSubmit() {
       // 处理返回数据
       // 导航到另一个页面
       console.log('shangjia')
+      console.log('shangjia')
       code.value = response.data['code'];
       if (code.value == 20000) {
         layout.value = false;
@@ -654,7 +652,7 @@ function handleUpload(event) {
   const r = event.xhr.responseText;
   const r_obj = JSON.parse(r)
   console.log(r_obj)
-  r_obj.message = 'http://localhost:9999/img/' + r_obj.message
+  r_obj.message = 'http://120.46.154.28:9999/img/' + r_obj.message
   image.value.push(r_obj.message)
   console.log(image.value)
 }
